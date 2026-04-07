@@ -25,9 +25,9 @@ import {
   getPendingToolRequests,
   updateToolRequestStatus,
   deleteToolRequest,
-} from "@/lib/db";
-import type { Tool } from "@/components/ToolCard";
-import type { ToolRequest } from "@/lib/db";
+} from "@/server/db";
+import type { Tool } from "@/components/tools/ToolCard";
+import type { ToolRequest } from "@/server/db";
 
 beforeAll(() => {
   if (!fs.existsSync(TEST_DB_DIR)) {

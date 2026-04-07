@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ToolCard from "@/components/ToolCard";
-import RequestToolForm from "@/components/RequestToolForm";
-import type { Tool } from "@/components/ToolCard";
+import ToolCard from "@/components/tools/ToolCard";
+import RequestToolForm from "@/components/forms/RequestToolForm";
+import type { Tool } from "@/components/tools/ToolCard";
 
 export default function ToolsPage() {
   const [tools, setTools] = useState<Tool[]>([]);

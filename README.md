@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Break Everything
 
-## Getting Started
+Free, open-source software tool directory for students, with safety metadata and a lightweight admin workflow.
 
-First, run the development server:
+Break Everything helps users discover downloadable tools, review trust signals (checksums and safety score), and request new tools to be added.
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+
+### Install and run
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Run checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm test
+npm run build
+```
 
-## Learn More
+`npm run build` runs tests first (`npm test && next build`).
 
-To learn more about Next.js, take a look at the following resources:
+## Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Browse all tools at `/tools`
+- View per-tool detail pages at `/tools/[slug]`
+- Inspect safety metadata such as SHA-256 and safety score
+- Submit tool requests from the public UI
+- Manage tools and requests from `/admin` after authentication
+- Use built-in API routes for tools, auth, and requests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
 
-## Deploy on Vercel
+- Next.js (App Router)
+- React
+- TypeScript
+- SQLite via `better-sqlite3`
+- Jest (`ts-jest`) for tests
+- ESLint for linting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [`STRUCTURE.md`](./STRUCTURE.md) for the full directory map.
+
+Key areas:
+
+- `src/app` - routes, layouts, pages, API route handlers
+- `src/components` - reusable UI components
+- `src/server` - server-only modules (database, auth, rate limiting)
+- `data` - local SQLite database files
+
+## API Overview
+
+- `GET /api/tools` - list tools (public)
+- `POST /api/tools` - create tool (admin)
+- `GET /api/tools/[slug]` - get one tool (public)
+- `PUT /api/tools/[slug]` - update tool (admin)
+- `DELETE /api/tools/[slug]` - delete tool (admin)
+- `GET /api/auth` - auth status
+- `POST /api/auth` - login
+- `DELETE /api/auth` - logout
+- `POST /api/requests` - submit tool request (public)
+- `GET /api/requests` - list requests (admin)
+- `PATCH /api/requests/[id]` - update request status (admin)
+- `DELETE /api/requests/[id]` - delete request (admin)
+
+## Configuration Notes
+
+- Default DB path: `data/break-everything.db`
+- Test DB path: set by `TEST_DB_PATH` in tests
+- Admin authentication uses cookie-based sessions
+
+### Security Note
+
+The current code seeds an admin password in `src/server/db.ts` for local development convenience. Treat this as development-only behavior and change it before any real deployment.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for workflow, expectations, and validation steps.
+
+## Changelog
+
+See [`CHANGELOG.md`](./CHANGELOG.md) for notable project changes.
+
+## License
+
+No license file is currently present. Add a `LICENSE` file before public distribution.

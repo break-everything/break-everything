@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/server/rate-limit";
 
 function makeRequest(ip: string = "192.168.1.1"): NextRequest {
   return new NextRequest("http://localhost:3000/api/test", {

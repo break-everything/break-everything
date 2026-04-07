@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { verifyAdminPassword } from "./db";
+import { verifyAdminPassword } from "@/server/db";
 
 const SESSION_COOKIE = "be_admin_session";
 const SESSION_SECRET = "break-everything-admin-secret-key-2026";

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateToolRequestStatus, deleteToolRequest } from "@/lib/db";
-import { isAuthenticated } from "@/lib/auth";
-import { rateLimiters } from "@/lib/rate-limit";
+import { updateToolRequestStatus, deleteToolRequest } from "@/server/db";
+import { isAuthenticated } from "@/server/auth";
+import { rateLimiters } from "@/server/rate-limit";
 
 export async function PATCH(
   request: NextRequest,

@@ -18,7 +18,7 @@ jest.mock("next/headers", () => ({
 }));
 
 import { NextRequest } from "next/server";
-import { getDb, _closeDb } from "@/lib/db";
+import { getDb, _closeDb } from "@/server/db";
 
 // Import route handlers
 import { GET as getTools, POST as postTool } from "@/app/api/tools/route";

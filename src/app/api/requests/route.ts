@@ -3,9 +3,9 @@ import {
   createToolRequest,
   getPendingToolRequests,
   getAllToolRequests,
-} from "@/lib/db";
-import { isAuthenticated } from "@/lib/auth";
-import { rateLimiters } from "@/lib/rate-limit";
+} from "@/server/db";
+import { isAuthenticated } from "@/server/auth";
+import { rateLimiters } from "@/server/rate-limit";
 
 export async function GET(request: NextRequest) {
   const blocked = rateLimiters.publicRead(request);

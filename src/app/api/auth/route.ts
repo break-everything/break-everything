@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { login, logout, isAuthenticated } from "@/lib/auth";
-import { rateLimiters } from "@/lib/rate-limit";
+import { login, logout, isAuthenticated } from "@/server/auth";
+import { rateLimiters } from "@/server/rate-limit";
 
 export async function GET(request: NextRequest) {
   const blocked = rateLimiters.publicRead(request);
