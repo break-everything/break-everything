@@ -4,33 +4,6 @@ Free, open-source software tool directory for students, with safety metadata and
 
 Break Everything helps users discover downloadable tools, review trust signals (checksums and safety score), and request new tools to be added.
 
-## Quick Start
-
-### Prerequisites
-
-- Node.js 20+
-- npm
-
-### Install and run
-
-```bash
-npm install
-cp .env.example .env
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-### Run checks
-
-```bash
-npm run lint
-npm test
-npm run build
-```
-
-`npm run build` runs tests first (`npm test && next build`).
-
 ## Features
 
 - Browse all tools at `/tools`
