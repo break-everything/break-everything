@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 const DB_PATH =
   process.env.TEST_DB_PATH ||
   path.join(process.cwd(), "data", "break-everything.db");
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 let db: Database.Database | null = null;
 
@@ -69,7 +70,9 @@ function initSchema(db: Database.Database) {
     );
   `);
 
-  const ADMIN_PASSWORD = "Wandmoon1!";
+  if (!ADMIN_PASSWORD) {
+    throw new Error("Missing ADMIN_PASSWORD environment variable.");
+  }
   const adminRow = db.prepare("SELECT password_hash FROM admin WHERE id = 1").get() as
     | { password_hash: string }
     | undefined;

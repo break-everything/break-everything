@@ -6,6 +6,7 @@ const TEST_DB_PATH = path.join(TEST_DB_DIR, "test.db");
 
 // Point the DB module to our test database before importing
 process.env.TEST_DB_PATH = TEST_DB_PATH;
+process.env.ADMIN_PASSWORD = "test-admin-password";
 
 import {
   getDb,
@@ -179,7 +180,7 @@ describe("Tools CRUD", () => {
 
 describe("Admin password verification", () => {
   it("accepts the correct password", () => {
-    expect(verifyAdminPassword("Wandmoon1!")).toBe(true);
+    expect(verifyAdminPassword("test-admin-password")).toBe(true);
   });
 
   it("rejects an incorrect password", () => {

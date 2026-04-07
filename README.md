@@ -15,6 +15,7 @@ Break Everything helps users discover downloadable tools, review trust signals (
 
 ```bash
 npm install
+cp .env.example .env
 npm run dev
 ```
 
@@ -79,10 +80,13 @@ Key areas:
 - Default DB path: `data/break-everything.db`
 - Test DB path: set by `TEST_DB_PATH` in tests
 - Admin authentication uses cookie-based sessions
+- Required env vars:
+  - `ADMIN_PASSWORD` - admin login password used for hashing/verification
+  - `SESSION_SECRET` - entropy source for session token generation
 
 ### Security Note
 
-The current code seeds an admin password in `src/server/db.ts` for local development convenience. Treat this as development-only behavior and change it before any real deployment.
+Never commit real credentials. Keep `ADMIN_PASSWORD` and `SESSION_SECRET` in local env/runtime secret stores only.
 
 ## Contributing
 

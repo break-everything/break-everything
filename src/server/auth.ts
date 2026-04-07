@@ -2,9 +2,12 @@ import { cookies } from "next/headers";
 import { verifyAdminPassword } from "@/server/db";
 
 const SESSION_COOKIE = "be_admin_session";
-const SESSION_SECRET = "break-everything-admin-secret-key-2026";
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 function generateToken(): string {
+  if (!SESSION_SECRET) {
+    throw new Error("Missing SESSION_SECRET environment variable.");
+  }
   const timestamp = Date.now().toString(36);
   const random = Math.random().toString(36).substring(2, 15);
   const hash = Buffer.from(`${SESSION_SECRET}:${timestamp}:${random}`).toString("base64");

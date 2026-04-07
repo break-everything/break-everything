@@ -5,6 +5,8 @@ const TEST_DB_DIR = path.join(process.cwd(), "data", "test");
 const TEST_DB_PATH = path.join(TEST_DB_DIR, "test-api.db");
 
 process.env.TEST_DB_PATH = TEST_DB_PATH;
+process.env.ADMIN_PASSWORD = "test-admin-password";
+process.env.SESSION_SECRET = "test-session-secret";
 
 // Mock next/headers cookies — API routes depend on this via auth.ts
 const mockCookieStore = new Map<string, { value: string }>();
@@ -102,7 +104,7 @@ describe("Auth API", () => {
 
   it("POST /api/auth accepts correct password and sets session", async () => {
     const req = jsonRequest("http://localhost/api/auth", "POST", {
-      password: "Wandmoon1!",
+      password: "test-admin-password",
     });
     const res = await postAuth(req);
     expect(res.status).toBe(200);
