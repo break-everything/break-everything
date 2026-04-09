@@ -400,9 +400,20 @@ export default function AdminPage() {
                 <div className="flex items-center gap-4 min-w-0">
                   <span className="text-2xl">{tool.icon}</span>
                   <div className="min-w-0">
-                    <h3 className="font-semibold text-foreground truncate">
-                      {tool.name}
-                    </h3>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-semibold text-foreground truncate">
+                        {tool.name}
+                      </h3>
+                      <span
+                        className={`shrink-0 px-2 py-0.5 rounded-md text-[10px] font-medium uppercase tracking-wider border ${
+                          tool.tool_kind === "web"
+                            ? "bg-sky-500/10 text-sky-400 border-sky-500/25"
+                            : "bg-violet-500/10 text-violet-300 border-violet-500/25"
+                        }`}
+                      >
+                        {tool.tool_kind === "web" ? "Web" : "Download"}
+                      </span>
+                    </div>
                     <div className="flex items-center gap-3 mt-0.5">
                       <span className="text-xs text-foreground/40">/{tool.slug}</span>
                       <span className="text-xs text-foreground/40 capitalize">

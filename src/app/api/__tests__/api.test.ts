@@ -238,6 +238,33 @@ describe("Tools API", () => {
     expect(data.success).toBe(true);
   });
 
+  it("POST /api/tools creates a web app with web_url when authenticated", async () => {
+    await loginAsAdmin();
+    const req = jsonRequest("http://localhost/api/tools", "POST", {
+      name: "Web Only",
+      slug: "web-only-tool",
+      description: "Browser app",
+      short_description: "Web short",
+      category: "utility",
+      tool_kind: "web",
+      web_url: "https://app.example.com/run",
+      download_url: "",
+      github_url: "https://github.com/test/web-only",
+      platform: "web",
+    });
+    const res = await postTool(req);
+    expect(res.status).toBe(201);
+
+    const getReq = jsonRequest("http://localhost/api/tools/web-only-tool", "GET");
+    const getRes = await getToolBySlug(getReq, {
+      params: Promise.resolve({ slug: "web-only-tool" }),
+    });
+    const data = await getRes.json();
+    expect(data.tool.tool_kind).toBe("web");
+    expect(data.tool.web_url).toBe("https://app.example.com/run");
+    expect(data.tool.download_url).toBe("");
+  });
+
   it("POST /api/tools returns 500 for duplicate slug", async () => {
     await loginAsAdmin();
     const req = jsonRequest("http://localhost/api/tools", "POST", {

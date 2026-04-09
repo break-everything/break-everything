@@ -120,6 +120,25 @@ async function queryAll<T>(sql: string, args: InArgs = []): Promise<T[]> {
   return result.rows as T[];
 }
 
+async function migrateToolsColumns(client: Client) {
+  const info = await client.execute("PRAGMA table_info(tools)");
+  const colNames = new Set(
+    info.rows.map((row) => {
+      const name = (row as { name?: string }).name;
+      return name != null ? String(name) : "";
+    })
+  );
+
+  if (!colNames.has("tool_kind")) {
+    await client.execute(
+      "ALTER TABLE tools ADD COLUMN tool_kind TEXT NOT NULL DEFAULT 'download'"
+    );
+  }
+  if (!colNames.has("web_url")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN web_url TEXT NOT NULL DEFAULT ''");
+  }
+}
+
 async function initSchema(client: Client) {
   const schemaStatements: InStatement[] = [
     {
@@ -131,7 +150,9 @@ async function initSchema(client: Client) {
         short_description TEXT NOT NULL,
         category TEXT NOT NULL,
         icon TEXT DEFAULT '🔧',
-        download_url TEXT NOT NULL,
+        tool_kind TEXT NOT NULL DEFAULT 'download' CHECK (tool_kind IN ('download', 'web')),
+        download_url TEXT NOT NULL DEFAULT '',
+        web_url TEXT NOT NULL DEFAULT '',
         github_url TEXT NOT NULL,
         platform TEXT NOT NULL DEFAULT 'windows',
         sha256_hash TEXT,
@@ -162,6 +183,7 @@ async function initSchema(client: Client) {
   ];
 
   await client.batch(schemaStatements, "write");
+  await migrateToolsColumns(client);
 
   if (!ADMIN_PASSWORD) {
     throw new Error("Missing ADMIN_PASSWORD environment variable.");
@@ -250,9 +272,9 @@ async function seedTools(client: Client) {
 
   const statements: InStatement[] = seeds.map((tool) => ({
     sql: `INSERT OR IGNORE INTO tools (
-      name, slug, description, short_description, category, icon, download_url, github_url,
+      name, slug, description, short_description, category, icon, tool_kind, download_url, web_url, github_url,
       platform, sha256_hash, safety_score, last_scan_date, downloads
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, 'download', ?, '', ?, ?, ?, ?, ?, ?)`,
     args: [
       tool.name,
       tool.slug,
@@ -292,7 +314,9 @@ interface ToolWriteInput {
   short_description: string;
   category: string;
   icon: string;
+  tool_kind: "download" | "web";
   download_url: string;
+  web_url: string;
   github_url: string;
   platform: string;
   sha256_hash: string | null;
@@ -303,9 +327,9 @@ interface ToolWriteInput {
 export async function createTool(tool: ToolWriteInput) {
   return execute(
     `INSERT INTO tools (
-      name, slug, description, short_description, category, icon, download_url, github_url,
+      name, slug, description, short_description, category, icon, tool_kind, download_url, web_url, github_url,
       platform, sha256_hash, safety_score, last_scan_date
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       tool.name,
       tool.slug,
@@ -313,7 +337,9 @@ export async function createTool(tool: ToolWriteInput) {
       tool.short_description,
       tool.category,
       tool.icon,
+      tool.tool_kind,
       tool.download_url,
+      tool.web_url,
       tool.github_url,
       tool.platform,
       tool.sha256_hash,
@@ -331,7 +357,9 @@ export async function updateTool(slug: string, tool: ToolWriteInput) {
       short_description = ?,
       category = ?,
       icon = ?,
+      tool_kind = ?,
       download_url = ?,
+      web_url = ?,
       github_url = ?,
       platform = ?,
       sha256_hash = ?,
@@ -345,7 +373,9 @@ export async function updateTool(slug: string, tool: ToolWriteInput) {
       tool.short_description,
       tool.category,
       tool.icon,
+      tool.tool_kind,
       tool.download_url,
+      tool.web_url,
       tool.github_url,
       tool.platform,
       tool.sha256_hash,

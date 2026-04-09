@@ -3,7 +3,7 @@ import { getAllTools, createTool } from "@/server/db";
 import { isAuthenticated } from "@/server/auth";
 import { rateLimiters } from "@/server/rate-limit";
 import { jsonServerError } from "@/server/api-response";
-import { isAllowedHttpUrl, isValidToolSlug } from "@/server/validation";
+import { isAllowedHttpUrl, isValidToolSlug, parseToolKind } from "@/server/validation";
 
 export async function GET(request: NextRequest) {
   const blocked = rateLimiters.publicRead(request);
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const required = ["name", "slug", "description", "short_description", "category", "download_url", "github_url"];
+  const required = ["name", "slug", "description", "short_description", "category", "github_url"];
   for (const field of required) {
     if (!body[field]) {
       return NextResponse.json(
@@ -33,6 +33,34 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  let toolKind: "download" | "web" = "download";
+  if (body.tool_kind != null && String(body.tool_kind).trim() !== "") {
+    const parsed = parseToolKind(body.tool_kind);
+    if (!parsed) {
+      return NextResponse.json(
+        { error: "tool_kind must be \"download\" or \"web\"" },
+        { status: 400 }
+      );
+    }
+    toolKind = parsed;
+  }
+
+  const downloadUrl = String(body.download_url ?? "").trim();
+  const webUrl = String(body.web_url ?? "").trim();
+
+  if (toolKind === "download" && !isAllowedHttpUrl(downloadUrl)) {
+    return NextResponse.json(
+      { error: "download_url must be a valid http(s) URL for download tools" },
+      { status: 400 }
+    );
+  }
+  if (toolKind === "web" && !isAllowedHttpUrl(webUrl)) {
+    return NextResponse.json(
+      { error: "web_url must be a valid http(s) URL for web apps" },
+      { status: 400 }
+    );
+  }
+
   if (!isValidToolSlug(String(body.slug))) {
     return NextResponse.json(
       { error: "Invalid slug: use lowercase letters, numbers, and hyphens only" },
@@ -40,12 +68,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (
-    !isAllowedHttpUrl(String(body.download_url)) ||
-    !isAllowedHttpUrl(String(body.github_url))
-  ) {
+  if (!isAllowedHttpUrl(String(body.github_url))) {
     return NextResponse.json(
-      { error: "download_url and github_url must be valid http(s) URLs" },
+      { error: "github_url must be a valid http(s) URL" },
       { status: 400 }
     );
   }
@@ -58,7 +83,9 @@ export async function POST(request: NextRequest) {
       short_description: body.short_description,
       category: body.category,
       icon: body.icon || "🔧",
-      download_url: body.download_url,
+      tool_kind: toolKind,
+      download_url: toolKind === "download" ? downloadUrl : "",
+      web_url: toolKind === "web" ? webUrl : "",
       github_url: body.github_url,
       platform: body.platform || "windows",
       sha256_hash: body.sha256_hash || null,

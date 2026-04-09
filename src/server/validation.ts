@@ -25,3 +25,12 @@ const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export function isValidToolSlug(slug: string): boolean {
   return typeof slug === "string" && slug.length >= 1 && slug.length <= 120 && SLUG_RE.test(slug);
 }
+
+export type ParsedToolKind = "download" | "web";
+
+export function parseToolKind(value: unknown): ParsedToolKind | null {
+  if (value === "web" || value === "download") {
+    return value;
+  }
+  return null;
+}

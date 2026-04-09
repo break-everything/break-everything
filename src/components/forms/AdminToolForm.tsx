@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Tool } from "@/types";
+import type { Tool, ToolKind } from "@/types";
 
 interface AdminToolFormProps {
   tool?: Tool | null;
@@ -11,6 +11,7 @@ interface AdminToolFormProps {
 
 function buildInitialForm(tool?: Tool | null) {
   if (tool) {
+    const kind: ToolKind = tool.tool_kind === "web" ? "web" : "download";
     return {
       name: tool.name,
       slug: tool.slug,
@@ -18,7 +19,9 @@ function buildInitialForm(tool?: Tool | null) {
       short_description: tool.short_description,
       category: tool.category,
       icon: tool.icon,
-      download_url: tool.download_url,
+      tool_kind: kind,
+      download_url: tool.download_url || "",
+      web_url: tool.web_url || "",
       github_url: tool.github_url,
       platform: tool.platform,
       sha256_hash: tool.sha256_hash || "",
@@ -33,7 +36,9 @@ function buildInitialForm(tool?: Tool | null) {
     short_description: "",
     category: "",
     icon: "🔧",
+    tool_kind: "download" as ToolKind,
     download_url: "",
+    web_url: "",
     github_url: "",
     platform: "windows",
     sha256_hash: "",
@@ -171,6 +176,18 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div>
+          <label className={labelClass}>Tool type</label>
+          <select
+            name="tool_kind"
+            value={form.tool_kind}
+            onChange={handleChange}
+            className={inputClass}
+          >
+            <option value="download">Download (native / installer)</option>
+            <option value="web">Web app (runs in browser)</option>
+          </select>
+        </div>
+        <div>
           <label className={labelClass}>Category</label>
           <input
             type="text"
@@ -200,6 +217,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
             onChange={handleChange}
             className={inputClass}
           >
+            <option value="web">Web browser</option>
             <option value="windows">Windows</option>
             <option value="mac">Mac</option>
             <option value="windows,mac">Windows & Mac</option>
@@ -208,18 +226,33 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div>
-          <label className={labelClass}>Download URL</label>
-          <input
-            type="url"
-            name="download_url"
-            value={form.download_url}
-            onChange={handleChange}
-            placeholder="https://github.com/.../releases/latest"
-            className={inputClass}
-            required
-          />
-        </div>
+        {form.tool_kind === "download" ? (
+          <div>
+            <label className={labelClass}>Download URL</label>
+            <input
+              type="url"
+              name="download_url"
+              value={form.download_url}
+              onChange={handleChange}
+              placeholder="https://… direct or release link"
+              className={inputClass}
+              required
+            />
+          </div>
+        ) : (
+          <div>
+            <label className={labelClass}>Web app URL</label>
+            <input
+              type="url"
+              name="web_url"
+              value={form.web_url}
+              onChange={handleChange}
+              placeholder="https://… where the app opens"
+              className={inputClass}
+              required
+            />
+          </div>
+        )}
         <div>
           <label className={labelClass}>GitHub URL</label>
           <input

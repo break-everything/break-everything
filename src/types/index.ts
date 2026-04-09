@@ -1,1 +1,1 @@
-export type { Tool } from "./tool";
+export type { Tool, ToolKind } from "./tool";

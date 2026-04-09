@@ -1,3 +1,5 @@
+export type ToolKind = "download" | "web";
+
 export interface Tool {
   id: number;
   name: string;
@@ -6,7 +8,10 @@ export interface Tool {
   short_description: string;
   category: string;
   icon: string;
+  /** download = native/binary link; web = in-browser app URL */
+  tool_kind: ToolKind;
   download_url: string;
+  web_url: string;
   github_url: string;
   platform: string;
   sha256_hash: string | null;
