@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import AdminAnalyticsPanel from "@/components/admin/AdminAnalyticsPanel";
 import AdminToolForm from "@/components/forms/AdminToolForm";
 import type { Tool, ToolRequest } from "@/types";
 
@@ -18,6 +19,7 @@ export default function AdminPage() {
 
   const [requests, setRequests] = useState<ToolRequest[]>([]);
   const [requestFilter, setRequestFilter] = useState<string>("pending");
+  const [adminTab, setAdminTab] = useState<"manage" | "analytics">("manage");
 
   const isMounted = useRef(true);
   useEffect(() => {
@@ -216,34 +218,69 @@ export default function AdminPage() {
     <div className="px-6 py-16">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-foreground/50 text-sm mt-1">
-              Manage tools and incoming requests.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            {!showForm && (
+        <div className="flex flex-col gap-6 mb-10">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+              <p className="text-foreground/50 text-sm mt-1">
+                Manage tools, requests, and analytics.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5 glass-card p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setAdminTab("manage")}
+                  className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
+                    adminTab === "manage"
+                      ? "bg-accent-purple/15 text-accent-purple border border-accent-purple/30"
+                      : "text-foreground/40 hover:text-foreground/60"
+                  }`}
+                >
+                  Manage
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAdminTab("analytics")}
+                  className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
+                    adminTab === "analytics"
+                      ? "bg-accent-purple/15 text-accent-purple border border-accent-purple/30"
+                      : "text-foreground/40 hover:text-foreground/60"
+                  }`}
+                >
+                  Analytics
+                </button>
+              </div>
+              {adminTab === "manage" && !showForm && (
+                <button
+                  onClick={() => {
+                    setEditingTool(null);
+                    setShowForm(true);
+                  }}
+                  className="px-5 py-2.5 rounded-xl font-medium text-sm bg-accent-purple hover:bg-accent-purple/90 text-white transition-all"
+                >
+                  + Add Tool
+                </button>
+              )}
               <button
-                onClick={() => {
-                  setEditingTool(null);
-                  setShowForm(true);
-                }}
-                className="px-5 py-2.5 rounded-xl font-medium text-sm bg-accent-purple hover:bg-accent-purple/90 text-white transition-all"
+                onClick={handleLogout}
+                className="px-5 py-2.5 font-medium text-sm glass-card text-foreground/60 hover:text-foreground"
               >
-                + Add Tool
+                Logout
               </button>
-            )}
-            <button
-              onClick={handleLogout}
-              className="px-5 py-2.5 font-medium text-sm glass-card text-foreground/60 hover:text-foreground"
-            >
-              Logout
-            </button>
+            </div>
           </div>
         </div>
 
+        {adminTab === "analytics" && (
+          <div className="mb-10">
+            <h2 className="text-xl font-bold text-foreground mb-4">Analytics</h2>
+            <AdminAnalyticsPanel />
+          </div>
+        )}
+
+        {adminTab === "manage" && (
+          <>
         {/* Add/Edit Form */}
         {showForm && (
           <div className="glass-card p-6 mb-8">
@@ -457,6 +494,8 @@ export default function AdminPage() {
             ))
           )}
         </div>
+          </>
+        )}
       </div>
     </div>
   );

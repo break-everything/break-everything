@@ -52,6 +52,8 @@ import {
   PATCH as patchRequestById,
   DELETE as deleteRequestById,
 } from "@/app/api/requests/[id]/route";
+import { POST as postEvent } from "@/app/api/events/route";
+import { GET as getAnalytics } from "@/app/api/analytics/route";
 
 beforeAll(async () => {
   if (!fs.existsSync(TEST_DB_DIR)) {
@@ -525,5 +527,124 @@ describe("Requests API", () => {
     const verifyData = await verifyRes.json();
     const deleted = verifyData.requests.find((r: { id: number }) => r.id === created.id);
     expect(deleted).toBeUndefined();
+  });
+});
+
+// --- Events API ---
+
+describe("Events API", () => {
+  it("POST /api/events persists a valid analytics event", async () => {
+    const req = jsonRequest("http://localhost/api/events", "POST", {
+      event: "tool_action_click",
+      slug: "pdf-forge",
+      action: "download",
+    });
+    const res = await postEvent(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.success).toBe(true);
+  });
+
+  it("POST /api/events rejects unknown event", async () => {
+    const req = jsonRequest("http://localhost/api/events", "POST", {
+      event: "unknown_event",
+      slug: "pdf-forge",
+      action: "download",
+    });
+    const res = await postEvent(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("POST /api/events rejects invalid slug", async () => {
+    const req = jsonRequest("http://localhost/api/events", "POST", {
+      event: "tool_action_click",
+      slug: "Not_A_Slug!",
+      action: "download",
+    });
+    const res = await postEvent(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("POST /api/events rejects invalid action characters", async () => {
+    const req = jsonRequest("http://localhost/api/events", "POST", {
+      event: "tool_action_click",
+      slug: "pdf-forge",
+      action: "download;",
+    });
+    const res = await postEvent(req);
+    expect(res.status).toBe(400);
+  });
+});
+
+// --- Analytics API ---
+
+describe("Analytics API", () => {
+  it("GET /api/analytics returns 401 without session", async () => {
+    const req = jsonRequest("http://localhost/api/analytics", "GET");
+    const res = await getAnalytics(req);
+    expect(res.status).toBe(401);
+  });
+
+  it("GET /api/analytics returns aggregates after events when authenticated", async () => {
+    for (let i = 0; i < 2; i++) {
+      const evReq = jsonRequest("http://localhost/api/events", "POST", {
+        event: "tool_action_click",
+        slug: "convertx",
+        action: "redirect",
+      });
+      expect((await postEvent(evReq)).status).toBe(200);
+    }
+
+    await loginAsAdmin();
+    const req = jsonRequest("http://localhost/api/analytics?days=7", "GET");
+    const res = await getAnalytics(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.days).toBe(7);
+    expect(data.summary.totals.all).toBeGreaterThanOrEqual(2);
+    expect(data.summary.toolActionClicks).toBeGreaterThanOrEqual(2);
+    const top = data.summary.topTools as { slug: string; count: number }[];
+    const convertx = top.find((t) => t.slug === "convertx");
+    expect(convertx).toBeDefined();
+    expect(convertx!.count).toBeGreaterThanOrEqual(2);
+  });
+
+  it("GET /api/analytics rejects invalid slug query param", async () => {
+    await loginAsAdmin();
+    const req = jsonRequest("http://localhost/api/analytics?slug=Not%21Valid", "GET");
+    const res = await getAnalytics(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("GET /api/analytics filters by slug", async () => {
+    const evReq = jsonRequest("http://localhost/api/events", "POST", {
+      event: "tool_action_click",
+      slug: "clipvault",
+      action: "embed",
+    });
+    expect((await postEvent(evReq)).status).toBe(200);
+
+    await loginAsAdmin();
+    const allRes = await getAnalytics(jsonRequest("http://localhost/api/analytics?days=90", "GET"));
+    expect(allRes.status).toBe(200);
+    const allData = await allRes.json();
+
+    const filRes = await getAnalytics(
+      jsonRequest("http://localhost/api/analytics?days=90&slug=clipvault", "GET")
+    );
+    expect(filRes.status).toBe(200);
+    const filData = await filRes.json();
+    expect(filData.slug).toBe("clipvault");
+    expect(filData.summary.totals.all).toBeLessThanOrEqual(allData.summary.totals.all);
+    expect(filData.summary.toolActionClicks).toBeGreaterThanOrEqual(1);
+    expect(filData.summary.topTools.length).toBeLessThanOrEqual(1);
+    if (filData.summary.topTools.length === 1) {
+      expect(filData.summary.topTools[0].slug).toBe("clipvault");
+    }
+    const embedRow = (filData.summary.byAction as { action: string; count: number }[]).find(
+      (a) => a.action === "embed"
+    );
+    expect(embedRow).toBeDefined();
+    expect(embedRow!.count).toBeGreaterThanOrEqual(1);
   });
 });

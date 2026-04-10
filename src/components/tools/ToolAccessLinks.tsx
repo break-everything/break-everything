@@ -1,6 +1,7 @@
 "use client";
 
 import type { Tool } from "@/types";
+import { trackToolActionClick } from "@/lib/analytics";
 import { resolvePrimaryAction } from "./delivery";
 
 const downloadIcon = (
@@ -51,17 +52,7 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
         : globeIcon;
 
   const isHero = variant === "hero";
-  const track = async (action: string) => {
-    try {
-      await fetch("/api/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ event: "tool_action_click", slug: tool.slug, action }),
-      });
-    } catch {
-      // non-blocking analytics
-    }
-  };
+  const track = (action: string) => void trackToolActionClick(tool.slug, action);
   const primaryClass = isHero
     ? "inline-flex items-center gap-2 px-6 py-3 rounded-none border-2 border-accent-blue/35 font-semibold text-sm bg-accent-purple hover:bg-accent-purple/90 text-background transition-all hover:scale-[1.02] shadow-[2px_2px_0_rgba(91,143,199,0.3)]"
     : "inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-none border-2 border-accent-blue/30 text-xs font-semibold font-mono uppercase tracking-wide bg-accent-purple/90 hover:bg-accent-purple text-background transition-colors";

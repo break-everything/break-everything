@@ -266,6 +266,21 @@ async function initSchema(client: Client) {
         created_at TEXT DEFAULT (datetime('now'))
       );`,
     },
+    {
+      sql: `CREATE TABLE IF NOT EXISTS analytics_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event TEXT NOT NULL,
+        slug TEXT NOT NULL,
+        action TEXT NOT NULL DEFAULT '',
+        created_at TEXT DEFAULT (datetime('now'))
+      );`,
+    },
+    {
+      sql: `CREATE INDEX IF NOT EXISTS idx_analytics_events_created_at ON analytics_events(created_at);`,
+    },
+    {
+      sql: `CREATE INDEX IF NOT EXISTS idx_analytics_events_event_slug ON analytics_events(event, slug);`,
+    },
   ];
 
   await client.batch(schemaStatements, "write");
@@ -638,4 +653,128 @@ export async function updateToolRequestStatus(id: number, status: string) {
 
 export async function deleteToolRequest(id: number) {
   return execute("DELETE FROM tool_requests WHERE id = ?", [id]);
+}
+
+// --- Analytics (UTC day boundaries for rollups; created_at matches SQLite datetime('now')) ---
+
+const ANALYTICS_TOP_TOOLS_LIMIT = 20;
+
+/** Format bound for SQLite `created_at` comparisons (UTC, `YYYY-MM-DD HH:MM:SS`). */
+function toSqliteUtcBound(d: Date): string {
+  return d.toISOString().slice(0, 19).replace("T", " ");
+}
+
+export interface AnalyticsSummary {
+  range: { since: string; until: string };
+  totals: { all: number; byEvent: { event: string; count: number }[] };
+  uniqueSlugs: number;
+  toolActionClicks: number;
+  byDay: { date: string; count: number }[];
+  topTools: { slug: string; count: number }[];
+  byAction: { action: string; count: number }[];
+}
+
+export async function recordAnalyticsEvent(input: {
+  event: string;
+  slug: string;
+  action: string;
+}): Promise<void> {
+  await execute(
+    "INSERT INTO analytics_events (event, slug, action) VALUES (?, ?, ?)",
+    [input.event, input.slug, input.action]
+  );
+}
+
+export async function getAnalyticsSummary(
+  since: Date,
+  options?: { slug?: string }
+): Promise<AnalyticsSummary> {
+  const sinceBound = toSqliteUtcBound(since);
+  const until = new Date();
+  const untilIso = until.toISOString();
+  const slug = options?.slug?.trim();
+  const baseWhere = slug ? "created_at >= ? AND slug = ?" : "created_at >= ?";
+  const baseArgs: InValue[] = slug ? [sinceBound, slug] : [sinceBound];
+
+  const allRow = await queryOne<{ count: number | string }>(
+    `SELECT COUNT(*) as count FROM analytics_events WHERE ${baseWhere}`,
+    baseArgs
+  );
+  const all = Number(allRow?.count ?? 0);
+
+  const byEventRows = await queryAll<{ event: string; count: number | string }>(
+    `SELECT event, COUNT(*) as count FROM analytics_events
+     WHERE ${baseWhere} GROUP BY event ORDER BY count DESC`,
+    baseArgs
+  );
+  const byEvent = byEventRows.map((r) => ({
+    event: r.event,
+    count: Number(r.count),
+  }));
+
+  const uniqueRow = await queryOne<{ n: number | string }>(
+    `SELECT COUNT(DISTINCT slug) as n FROM analytics_events WHERE ${baseWhere}`,
+    baseArgs
+  );
+  const uniqueSlugs = Number(uniqueRow?.n ?? 0);
+
+  const tacWhere = slug
+    ? "created_at >= ? AND slug = ? AND event = 'tool_action_click'"
+    : "created_at >= ? AND event = 'tool_action_click'";
+  const tacArgs: InValue[] = slug ? [sinceBound, slug] : [sinceBound];
+
+  const tacRow = await queryOne<{ count: number | string }>(
+    `SELECT COUNT(*) as count FROM analytics_events WHERE ${tacWhere}`,
+    tacArgs
+  );
+  const toolActionClicks = Number(tacRow?.count ?? 0);
+
+  const byDayRows = await queryAll<{ day: string; count: number | string }>(
+    `SELECT strftime('%Y-%m-%d', created_at) as day, COUNT(*) as count
+     FROM analytics_events WHERE ${baseWhere}
+     GROUP BY day ORDER BY day`,
+    baseArgs
+  );
+  const byDay = byDayRows.map((r) => ({
+    date: r.day,
+    count: Number(r.count),
+  }));
+
+  const topArgs: InValue[] = slug
+    ? [sinceBound, slug, ANALYTICS_TOP_TOOLS_LIMIT]
+    : [sinceBound, ANALYTICS_TOP_TOOLS_LIMIT];
+  const topWhere = slug
+    ? "created_at >= ? AND slug = ? AND event = 'tool_action_click'"
+    : "created_at >= ? AND event = 'tool_action_click'";
+  const topRows = await queryAll<{ slug: string; count: number | string }>(
+    `SELECT slug, COUNT(*) as count FROM analytics_events
+     WHERE ${topWhere}
+     GROUP BY slug ORDER BY count DESC LIMIT ?`,
+    topArgs
+  );
+  const topTools = topRows.map((r) => ({
+    slug: r.slug,
+    count: Number(r.count),
+  }));
+
+  const byActionRows = await queryAll<{ action: string; count: number | string }>(
+    `SELECT action, COUNT(*) as count FROM analytics_events
+     WHERE ${tacWhere}
+     GROUP BY action ORDER BY count DESC`,
+    tacArgs
+  );
+  const byAction = byActionRows.map((r) => ({
+    action: r.action || "(empty)",
+    count: Number(r.count),
+  }));
+
+  return {
+    range: { since: since.toISOString(), until: untilIso },
+    totals: { all, byEvent },
+    uniqueSlugs,
+    toolActionClicks,
+    byDay,
+    topTools,
+    byAction,
+  };
 }

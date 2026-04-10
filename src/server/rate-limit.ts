@@ -117,4 +117,8 @@ export const rateLimiters = {
   /** Admin writes: 30 per minute per IP */
   adminWrite: (req: NextRequest) =>
     checkRateLimit(req, { name: "admin-write", maxRequests: 30, windowSeconds: 60 }),
+
+  /** Analytics event ingestion: 120 per minute per IP */
+  analyticsIngest: (req: NextRequest) =>
+    checkRateLimit(req, { name: "analytics-ingest", maxRequests: 120, windowSeconds: 60 }),
 } as const;
