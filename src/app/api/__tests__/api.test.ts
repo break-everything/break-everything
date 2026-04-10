@@ -126,6 +126,20 @@ describe("Auth API", () => {
     expect(res.status).toBe(400);
   });
 
+  it("POST /api/auth rejects invalid JSON with 400", async () => {
+    const req = new NextRequest("http://localhost/api/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-forwarded-for": "198.51.100.11",
+      },
+      body: "{not-json",
+    });
+    const res = await postAuth(req);
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe("Invalid payload");
+  });
+
   it("POST /api/auth accepts correct password and sets session", async () => {
     const req = jsonRequest("http://localhost/api/auth", "POST", {
       password: "test-admin-password",
@@ -188,6 +202,9 @@ describe("Tools API", () => {
     const res = await getTools(req);
     const data = await res.json();
     expect(data.tools.length).toBe(3);
+    for (const t of data.tools) {
+      expect(t).not.toHaveProperty("review_notes");
+    }
   });
 
   it("POST /api/tools rejects unauthenticated requests", async () => {
@@ -296,6 +313,7 @@ describe("Tools API", () => {
     const res = await getToolBySlug(req, { params });
     const data = await res.json();
     expect(data.tool.name).toBe("API Test Tool");
+    expect(data.tool).not.toHaveProperty("review_notes");
   });
 
   it("GET /api/tools/[slug] returns 404 for unknown slug", async () => {
@@ -470,6 +488,19 @@ describe("Requests API", () => {
       params: Promise.resolve({ id: "1" }),
     });
     expect(badStatusRes.status).toBe(400);
+
+    const badJsonReq = new NextRequest("http://localhost/api/requests/1", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "x-forwarded-for": "198.51.100.12",
+      },
+      body: "[1,2]",
+    });
+    const badJsonRes = await patchRequestById(badJsonReq, {
+      params: Promise.resolve({ id: "1" }),
+    });
+    expect(badJsonRes.status).toBe(400);
   });
 
   it("PATCH /api/requests/[id] updates request status when authenticated", async () => {

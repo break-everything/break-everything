@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Tool } from "@/types";
 import { getToolBySlug, updateTool, deleteTool } from "@/server/db";
 import { isAuthenticated } from "@/server/auth";
 import { rateLimiters } from "@/server/rate-limit";
 import { jsonServerError } from "@/server/api-response";
+import { readJsonObjectBody } from "@/server/parse-json-body";
+import { toPublicTool } from "@/server/tool-public";
 import {
   isAllowedEmbedUrl,
   isAllowedHttpUrl,
   isValidToolSlug,
+  normalizeTrustedDomainsInput,
   parseCsvDomains,
   parseDataHandling,
   parseDeliveryMode,
@@ -26,7 +30,7 @@ export async function GET(
   if (!tool) {
     return NextResponse.json({ error: "Tool not found" }, { status: 404 });
   }
-  return NextResponse.json({ tool });
+  return NextResponse.json({ tool: toPublicTool(tool as Tool) });
 }
 
 export async function PUT(
@@ -46,7 +50,9 @@ export async function PUT(
     return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
   }
 
-  const body = await request.json();
+  const parsed = await readJsonObjectBody(request);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.body;
 
   let toolKind: "download" | "web" = "download";
   if (body.tool_kind != null && String(body.tool_kind).trim() !== "") {
@@ -64,7 +70,11 @@ export async function PUT(
   const webUrl = String(body.web_url ?? "").trim();
   const embedUrl = String(body.embed_url ?? "").trim();
   const runtimeEntrypoint = String(body.runtime_entrypoint ?? "").trim();
-  const trustedDomains = parseCsvDomains(body.trusted_domains).join(",");
+  const trustedResult = normalizeTrustedDomainsInput(body.trusted_domains);
+  if (!trustedResult.ok) {
+    return NextResponse.json({ error: trustedResult.error }, { status: 400 });
+  }
+  const trustedDomains = trustedResult.csv;
 
   let deliveryMode: "redirect" | "embedded" | "browserRuntime" | "download" = "download";
   if (body.delivery_mode != null && String(body.delivery_mode).trim() !== "") {
@@ -142,20 +152,26 @@ export async function PUT(
     );
   }
 
+  const lastReviewedRaw = body.last_reviewed_at;
+  const lastReviewedAt =
+    lastReviewedRaw == null || String(lastReviewedRaw).trim() === ""
+      ? null
+      : String(lastReviewedRaw);
+
   try {
     await updateTool(slug, {
-      name: body.name,
-      description: body.description,
-      short_description: body.short_description,
-      category: body.category,
-      icon: body.icon || "🔧",
+      name: String(body.name ?? ""),
+      description: String(body.description ?? ""),
+      short_description: String(body.short_description ?? ""),
+      category: String(body.category ?? ""),
+      icon: String(body.icon ?? "").trim() || "🔧",
       tool_kind: toolKind,
       delivery_mode: deliveryMode,
       download_url: downloadUrl,
       web_url: webUrl,
-      embed_allowed: body.embed_allowed ? 1 : 0,
+      embed_allowed: Boolean(body.embed_allowed) ? 1 : 0,
       embed_url: embedUrl,
-      runtime_supported: body.runtime_supported ? 1 : 0,
+      runtime_supported: Boolean(body.runtime_supported) ? 1 : 0,
       runtime_entrypoint: runtimeEntrypoint,
       sandbox_level: sandboxLevel,
       trusted_domains: trustedDomains,
@@ -163,9 +179,9 @@ export async function PUT(
       privacy_summary: String(body.privacy_summary ?? "").trim(),
       data_handling: dataHandling,
       review_notes: String(body.review_notes ?? "").trim(),
-      last_reviewed_at: body.last_reviewed_at || null,
-      github_url: body.github_url,
-      platform: body.platform || "windows",
+      last_reviewed_at: lastReviewedAt,
+      github_url: String(body.github_url ?? ""),
+      platform: String(body.platform ?? "").trim() || "windows",
     });
     return NextResponse.json({ success: true });
   } catch (err: unknown) {

@@ -2,6 +2,7 @@ import {
   InvalidJsonBodyError,
   isApplicationJsonContentType,
   parseJsonRequestBody,
+  tryParseJsonObjectBody,
 } from "@/server/parse-json-body";
 
 describe("isApplicationJsonContentType", () => {
@@ -61,5 +62,24 @@ describe("parseJsonRequestBody", () => {
 
   it("allows JSON array as a value (caller validates object shape)", () => {
     expect(parseJsonRequestBody("[1]", "application/json")).toEqual([1]);
+  });
+});
+
+describe("tryParseJsonObjectBody", () => {
+  it("returns ok for a JSON object", () => {
+    const r = tryParseJsonObjectBody('{"a":1}', "application/json");
+    expect(r).toEqual({ ok: true, body: { a: 1 } });
+  });
+
+  it("returns not ok for arrays, primitives, and null", () => {
+    expect(tryParseJsonObjectBody("[]", "application/json")).toEqual({ ok: false });
+    expect(tryParseJsonObjectBody("null", "application/json")).toEqual({ ok: false });
+    expect(tryParseJsonObjectBody('"x"', "application/json")).toEqual({ ok: false });
+    expect(tryParseJsonObjectBody("42", "application/json")).toEqual({ ok: false });
+  });
+
+  it("returns not ok for invalid JSON and wrong content type", () => {
+    expect(tryParseJsonObjectBody("{", "application/json")).toEqual({ ok: false });
+    expect(tryParseJsonObjectBody("{}", null)).toEqual({ ok: false });
   });
 });

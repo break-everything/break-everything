@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { updateToolRequestStatus, deleteToolRequest } from "@/server/db";
 import { isAuthenticated } from "@/server/auth";
 import { rateLimiters } from "@/server/rate-limit";
+import { readJsonObjectBody } from "@/server/parse-json-body";
 import { parsePositiveIntId } from "@/server/validation";
 
 export async function PATCH(
@@ -22,9 +23,11 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
 
-  const { status } = await request.json();
+  const parsed = await readJsonObjectBody(request);
+  if (!parsed.ok) return parsed.response;
+  const status = parsed.body.status;
 
-  if (!["pending", "approved", "dismissed"].includes(status)) {
+  if (typeof status !== "string" || !["pending", "approved", "dismissed"].includes(status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 

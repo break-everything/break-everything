@@ -7,6 +7,7 @@ import {
 import { isAuthenticated } from "@/server/auth";
 import { rateLimiters } from "@/server/rate-limit";
 import { jsonServerError } from "@/server/api-response";
+import { readJsonObjectBody } from "@/server/parse-json-body";
 import { isAllowedHttpUrl } from "@/server/validation";
 
 export async function GET(request: NextRequest) {
@@ -25,28 +26,34 @@ export async function POST(request: NextRequest) {
   const blocked = rateLimiters.requestSubmit(request);
   if (blocked) return blocked;
 
-  const body = await request.json();
+  const parsed = await readJsonObjectBody(request);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.body;
 
-  if (!body.tool_name?.trim() || !body.description?.trim()) {
+  const toolName = String(body.tool_name ?? "").trim();
+  const description = String(body.description ?? "").trim();
+  if (!toolName || !description) {
     return NextResponse.json(
       { error: "Tool name and description are required" },
       { status: 400 }
     );
   }
 
-  if (body.tool_name.length > 100 || body.description.length > 1000) {
+  if (toolName.length > 100 || description.length > 1000) {
     return NextResponse.json(
       { error: "Tool name or description is too long" },
       { status: 400 }
     );
   }
 
-  const submittedBy = body.submitted_by?.trim();
+  const submittedByRaw = String(body.submitted_by ?? "").trim();
+  const submittedBy = submittedByRaw || undefined;
   if (submittedBy && submittedBy.length > 200) {
     return NextResponse.json({ error: "submitted_by is too long" }, { status: 400 });
   }
 
-  const link = body.link?.trim();
+  const linkRaw = String(body.link ?? "").trim();
+  const link = linkRaw || undefined;
   if (link && !isAllowedHttpUrl(link)) {
     return NextResponse.json(
       { error: "link must be a valid http(s) URL" },
@@ -56,10 +63,10 @@ export async function POST(request: NextRequest) {
 
   try {
     await createToolRequest({
-      tool_name: body.tool_name.trim(),
-      description: body.description.trim(),
-      submitted_by: submittedBy || undefined,
-      link: link || undefined,
+      tool_name: toolName,
+      description,
+      submitted_by: submittedBy,
+      link,
     });
 
     const pendingCount = (await getPendingToolRequests()).length;

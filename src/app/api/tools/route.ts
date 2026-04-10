@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Tool } from "@/types";
 import { getAllTools, createTool } from "@/server/db";
 import { isAuthenticated } from "@/server/auth";
 import { rateLimiters } from "@/server/rate-limit";
 import { jsonServerError } from "@/server/api-response";
+import { readJsonObjectBody } from "@/server/parse-json-body";
+import { toPublicTool } from "@/server/tool-public";
 import {
   isAllowedEmbedUrl,
   isAllowedHttpUrl,
   isValidToolSlug,
+  normalizeTrustedDomainsInput,
   parseCsvDomains,
   parseDataHandling,
   parseDeliveryMode,
@@ -19,7 +23,7 @@ export async function GET(request: NextRequest) {
   if (blocked) return blocked;
 
   const tools = await getAllTools();
-  return NextResponse.json({ tools });
+  return NextResponse.json({ tools: tools.map((t) => toPublicTool(t as Tool)) });
 }
 
 export async function POST(request: NextRequest) {
@@ -31,7 +35,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
+  const parsed = await readJsonObjectBody(request);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.body;
+
   const required = ["name", "slug", "description", "short_description", "category", "github_url"];
   for (const field of required) {
     if (!body[field]) {
@@ -58,7 +65,11 @@ export async function POST(request: NextRequest) {
   const webUrl = String(body.web_url ?? "").trim();
   const embedUrl = String(body.embed_url ?? "").trim();
   const runtimeEntrypoint = String(body.runtime_entrypoint ?? "").trim();
-  const trustedDomains = parseCsvDomains(body.trusted_domains).join(",");
+  const trustedResult = normalizeTrustedDomainsInput(body.trusted_domains);
+  if (!trustedResult.ok) {
+    return NextResponse.json({ error: trustedResult.error }, { status: 400 });
+  }
+  const trustedDomains = trustedResult.csv;
 
   let deliveryMode: "redirect" | "embedded" | "browserRuntime" | "download" = "download";
   if (body.delivery_mode != null && String(body.delivery_mode).trim() !== "") {
@@ -143,21 +154,27 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const lastReviewedRaw = body.last_reviewed_at;
+  const lastReviewedAt =
+    lastReviewedRaw == null || String(lastReviewedRaw).trim() === ""
+      ? null
+      : String(lastReviewedRaw);
+
   try {
     const result = await createTool({
-      name: body.name,
-      slug: body.slug,
-      description: body.description,
-      short_description: body.short_description,
-      category: body.category,
-      icon: body.icon || "🔧",
+      name: String(body.name ?? ""),
+      slug: String(body.slug ?? ""),
+      description: String(body.description ?? ""),
+      short_description: String(body.short_description ?? ""),
+      category: String(body.category ?? ""),
+      icon: String(body.icon ?? "").trim() || "🔧",
       tool_kind: toolKind,
       delivery_mode: deliveryMode,
       download_url: downloadUrl,
       web_url: webUrl,
-      embed_allowed: body.embed_allowed ? 1 : 0,
+      embed_allowed: Boolean(body.embed_allowed) ? 1 : 0,
       embed_url: embedUrl,
-      runtime_supported: body.runtime_supported ? 1 : 0,
+      runtime_supported: Boolean(body.runtime_supported) ? 1 : 0,
       runtime_entrypoint: runtimeEntrypoint,
       sandbox_level: sandboxLevel,
       trusted_domains: trustedDomains,
@@ -165,9 +182,9 @@ export async function POST(request: NextRequest) {
       privacy_summary: String(body.privacy_summary ?? "").trim(),
       data_handling: dataHandling,
       review_notes: String(body.review_notes ?? "").trim(),
-      last_reviewed_at: body.last_reviewed_at || null,
-      github_url: body.github_url,
-      platform: body.platform || "windows",
+      last_reviewed_at: lastReviewedAt,
+      github_url: String(body.github_url ?? ""),
+      platform: String(body.platform ?? "").trim() || "windows",
     });
     return NextResponse.json({ success: true, id: Number(result.lastInsertRowid) }, { status: 201 });
   } catch (err: unknown) {
