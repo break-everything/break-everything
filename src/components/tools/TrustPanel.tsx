@@ -11,7 +11,7 @@ export default function TrustPanel({ tool }: { tool: Tool }) {
         Listing details
       </h3>
       <p className="text-sm text-foreground/55">
-        We show how each tool is delivered (web, embed, runtime, or download) and link to the public repository.
+        Each listing links to the public repository and includes notes from our review.
       </p>
       <div className="text-sm text-foreground/60 space-y-2">
         <p>

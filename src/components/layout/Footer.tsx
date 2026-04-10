@@ -44,7 +44,7 @@ export default function Footer() {
               </li>
               <li className="text-sm text-foreground/50 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500" />
-                Clear delivery mode (web, embed, download, and more)
+                Categories and platforms called out on each card
               </li>
               <li className="text-sm text-foreground/50 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500" />
