@@ -1,11 +1,72 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ToolAccessLinks from "@/components/tools/ToolAccessLinks";
 import TrustPanel from "@/components/tools/TrustPanel";
+import {
+  DEFAULT_OG_IMAGE,
+  SITE_NAME,
+} from "@/lib/site-metadata";
 import { getToolBySlug } from "@/server/db";
 import type { Tool } from "@/types";
 
 export const dynamic = "force-dynamic";
+
+function toolSummary(tool: Tool): string {
+  const short = tool.short_description?.trim();
+  if (short) return short;
+  const flat = tool.description.trim().replace(/\s+/g, " ");
+  return flat.length > 160 ? `${flat.slice(0, 157)}…` : flat;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const tool = (await getToolBySlug(slug)) as Tool | undefined;
+  if (!tool) {
+    return { title: "Not found" };
+  }
+
+  const description = toolSummary(tool);
+  const path = `/tools/${slug}`;
+  const pageTitle = tool.name;
+  const ogTitle = `${tool.name} | ${SITE_NAME}`;
+
+  return {
+    title: pageTitle,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      type: "website",
+      url: path,
+      siteName: SITE_NAME,
+      title: ogTitle,
+      description,
+      images: [
+        {
+          ...DEFAULT_OG_IMAGE,
+          alt: `${tool.name} — ${SITE_NAME}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description,
+      images: [
+        {
+          url: DEFAULT_OG_IMAGE.url,
+          alt: `${tool.name} — ${SITE_NAME}`,
+          width: DEFAULT_OG_IMAGE.width,
+          height: DEFAULT_OG_IMAGE.height,
+        },
+      ],
+    },
+  };
+}
 
 export default async function ToolDetailPage({
   params,

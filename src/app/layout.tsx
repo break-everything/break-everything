@@ -3,6 +3,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AbstractBg from "@/components/layout/AbstractBg";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_TITLE,
+  SITE_NAME,
+} from "@/lib/site-metadata";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,22 +26,54 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Break Everything — Free Tools for Students",
-  description:
-    "A curated, open-source tool directory for students — build-ready listings with source links and clear details.",
+  applicationName: SITE_NAME,
+  title: {
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  keywords: [
+    "open source",
+    "student tools",
+    "free software",
+    "tool directory",
+    "developers",
+    "Break Everything",
+  ],
+  authors: [{ name: SITE_NAME, url: siteUrl }],
+  creator: SITE_NAME,
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: [{ url: "/logo-mark.png", type: "image/png" }],
     apple: "/logo-mark.png",
   },
   openGraph: {
-    title: "Break Everything — Free Tools for Students",
-    description:
-      "A curated, open-source tool directory for students — build-ready listings with source links and clear details.",
-    images: [{ url: "/logo-lockup.png", alt: "Break Everything" }],
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/logo-lockup.png"],
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE.url,
+        alt: DEFAULT_OG_IMAGE.alt,
+        width: DEFAULT_OG_IMAGE.width,
+        height: DEFAULT_OG_IMAGE.height,
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
