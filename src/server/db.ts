@@ -22,6 +22,9 @@ function isNextProductionBuild(): boolean {
 
 /** Sample tools are never inserted in production; tests keep seeds via NODE_ENV=test; local dev opt-in. */
 function shouldSeedToolLibrary(): boolean {
+  if (process.env.PLAYWRIGHT_E2E === "1") {
+    return true;
+  }
   if (process.env.NODE_ENV === "production") {
     return false;
   }
@@ -110,14 +113,23 @@ async function execute(sql: string, args: InArgs = []): Promise<ResultSet> {
   return getDb().execute({ sql, args });
 }
 
+function toPlainObject<T>(row: unknown): T {
+  if (!row || typeof row !== "object") {
+    return row as T;
+  }
+  return Object.fromEntries(Object.entries(row as Record<string, unknown>)) as T;
+}
+
 async function queryOne<T>(sql: string, args: InArgs = []): Promise<T | undefined> {
   const result = await execute(sql, args);
-  return result.rows[0] as T | undefined;
+  const row = result.rows[0];
+  if (!row) return undefined;
+  return toPlainObject<T>(row);
 }
 
 async function queryAll<T>(sql: string, args: InArgs = []): Promise<T[]> {
   const result = await execute(sql, args);
-  return result.rows as T[];
+  return result.rows.map((row) => toPlainObject<T>(row));
 }
 
 async function migrateToolsColumns(client: Client) {
@@ -137,6 +149,46 @@ async function migrateToolsColumns(client: Client) {
   if (!colNames.has("web_url")) {
     await client.execute("ALTER TABLE tools ADD COLUMN web_url TEXT NOT NULL DEFAULT ''");
   }
+  if (!colNames.has("delivery_mode")) {
+    await client.execute(
+      "ALTER TABLE tools ADD COLUMN delivery_mode TEXT NOT NULL DEFAULT 'download'"
+    );
+  }
+  if (!colNames.has("embed_allowed")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN embed_allowed INTEGER NOT NULL DEFAULT 0");
+  }
+  if (!colNames.has("embed_url")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN embed_url TEXT NOT NULL DEFAULT ''");
+  }
+  if (!colNames.has("runtime_supported")) {
+    await client.execute(
+      "ALTER TABLE tools ADD COLUMN runtime_supported INTEGER NOT NULL DEFAULT 0"
+    );
+  }
+  if (!colNames.has("runtime_entrypoint")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN runtime_entrypoint TEXT NOT NULL DEFAULT ''");
+  }
+  if (!colNames.has("sandbox_level")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN sandbox_level TEXT NOT NULL DEFAULT 'strict'");
+  }
+  if (!colNames.has("trusted_domains")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN trusted_domains TEXT NOT NULL DEFAULT ''");
+  }
+  if (!colNames.has("vendor")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN vendor TEXT NOT NULL DEFAULT ''");
+  }
+  if (!colNames.has("privacy_summary")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN privacy_summary TEXT NOT NULL DEFAULT ''");
+  }
+  if (!colNames.has("data_handling")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN data_handling TEXT NOT NULL DEFAULT 'medium'");
+  }
+  if (!colNames.has("review_notes")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN review_notes TEXT NOT NULL DEFAULT ''");
+  }
+  if (!colNames.has("last_reviewed_at")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN last_reviewed_at TEXT");
+  }
 }
 
 async function initSchema(client: Client) {
@@ -151,12 +203,23 @@ async function initSchema(client: Client) {
         category TEXT NOT NULL,
         icon TEXT DEFAULT '🔧',
         tool_kind TEXT NOT NULL DEFAULT 'download' CHECK (tool_kind IN ('download', 'web')),
+        delivery_mode TEXT NOT NULL DEFAULT 'download' CHECK (delivery_mode IN ('redirect', 'embedded', 'browserRuntime', 'download')),
         download_url TEXT NOT NULL DEFAULT '',
         web_url TEXT NOT NULL DEFAULT '',
+        embed_allowed INTEGER NOT NULL DEFAULT 0,
+        embed_url TEXT NOT NULL DEFAULT '',
+        runtime_supported INTEGER NOT NULL DEFAULT 0,
+        runtime_entrypoint TEXT NOT NULL DEFAULT '',
+        sandbox_level TEXT NOT NULL DEFAULT 'strict' CHECK (sandbox_level IN ('strict', 'standard', 'trusted')),
+        trusted_domains TEXT NOT NULL DEFAULT '',
+        vendor TEXT NOT NULL DEFAULT '',
+        privacy_summary TEXT NOT NULL DEFAULT '',
+        data_handling TEXT NOT NULL DEFAULT 'medium' CHECK (data_handling IN ('low', 'medium', 'high')),
+        review_notes TEXT NOT NULL DEFAULT '',
+        last_reviewed_at TEXT,
         github_url TEXT NOT NULL,
         platform TEXT NOT NULL DEFAULT 'windows',
         sha256_hash TEXT,
-        safety_score INTEGER DEFAULT 100,
         last_scan_date TEXT,
         downloads INTEGER DEFAULT 0,
         created_at TEXT DEFAULT (datetime('now')),
@@ -228,11 +291,23 @@ async function seedTools(client: Client) {
       short_description: "Free PDF editor — merge, split, rotate & annotate with zero watermarks.",
       category: "pdf",
       icon: "📄",
+      delivery_mode: "download",
       download_url: "https://github.com/example/pdf-forge/releases/latest",
+      web_url: "",
+      embed_allowed: 0,
+      embed_url: "",
+      runtime_supported: 0,
+      runtime_entrypoint: "",
+      sandbox_level: "strict",
+      trusted_domains: "github.com",
+      vendor: "Example OSS",
+      privacy_summary: "Runs as a local desktop app downloaded from GitHub releases.",
+      data_handling: "medium",
+      review_notes: "Seed data. Verify checksums before publishing.",
+      last_reviewed_at: "2026-03-28",
       github_url: "https://github.com/example/pdf-forge",
       platform: "windows,mac",
       sha256_hash: "a1b2c3d4e5f6789012345678abcdef0123456789abcdef0123456789abcdef01",
-      safety_score: 98,
       last_scan_date: "2026-03-28",
       downloads: 12450,
     },
@@ -244,11 +319,23 @@ async function seedTools(client: Client) {
       short_description: "Convert 50+ file formats locally. Images, docs, audio & video — all offline.",
       category: "converter",
       icon: "🔄",
+      delivery_mode: "download",
       download_url: "https://github.com/example/convertx/releases/latest",
+      web_url: "",
+      embed_allowed: 0,
+      embed_url: "",
+      runtime_supported: 0,
+      runtime_entrypoint: "",
+      sandbox_level: "strict",
+      trusted_domains: "github.com",
+      vendor: "Example OSS",
+      privacy_summary: "Local conversion workflow. Files are not uploaded by default.",
+      data_handling: "medium",
+      review_notes: "Seed data. Verify publisher identity before production.",
+      last_reviewed_at: "2026-04-01",
       github_url: "https://github.com/example/convertx",
       platform: "windows",
       sha256_hash: "b2c3d4e5f6789012345678abcdef0123456789abcdef0123456789abcdef0123",
-      safety_score: 95,
       last_scan_date: "2026-04-01",
       downloads: 8320,
     },
@@ -260,11 +347,23 @@ async function seedTools(client: Client) {
       short_description: "Smart clipboard manager — search history, pin clips & never lose a copy.",
       category: "utility",
       icon: "📋",
+      delivery_mode: "download",
       download_url: "https://github.com/example/clipvault/releases/latest",
+      web_url: "",
+      embed_allowed: 0,
+      embed_url: "",
+      runtime_supported: 0,
+      runtime_entrypoint: "",
+      sandbox_level: "strict",
+      trusted_domains: "github.com",
+      vendor: "Example OSS",
+      privacy_summary: "Desktop utility with local clipboard history storage.",
+      data_handling: "medium",
+      review_notes: "Seed data. Confirm signed artifacts in real deployments.",
+      last_reviewed_at: "2026-04-03",
       github_url: "https://github.com/example/clipvault",
       platform: "windows,mac",
       sha256_hash: "c3d4e5f6789012345678abcdef0123456789abcdef0123456789abcdef012345",
-      safety_score: 100,
       last_scan_date: "2026-04-03",
       downloads: 5640,
     },
@@ -272,9 +371,11 @@ async function seedTools(client: Client) {
 
   const statements: InStatement[] = seeds.map((tool) => ({
     sql: `INSERT OR IGNORE INTO tools (
-      name, slug, description, short_description, category, icon, tool_kind, download_url, web_url, github_url,
-      platform, sha256_hash, safety_score, last_scan_date, downloads
-    ) VALUES (?, ?, ?, ?, ?, ?, 'download', ?, '', ?, ?, ?, ?, ?, ?)`,
+      name, slug, description, short_description, category, icon, tool_kind, delivery_mode, download_url, web_url,
+      embed_allowed, embed_url, runtime_supported, runtime_entrypoint, sandbox_level, trusted_domains, vendor,
+      privacy_summary, data_handling, review_notes, last_reviewed_at, github_url, platform, sha256_hash,
+      last_scan_date, downloads
+    ) VALUES (?, ?, ?, ?, ?, ?, 'download', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       tool.name,
       tool.slug,
@@ -282,11 +383,23 @@ async function seedTools(client: Client) {
       tool.short_description,
       tool.category,
       tool.icon,
+      tool.delivery_mode,
       tool.download_url,
+      tool.web_url,
+      tool.embed_allowed,
+      tool.embed_url,
+      tool.runtime_supported,
+      tool.runtime_entrypoint,
+      tool.sandbox_level,
+      tool.trusted_domains,
+      tool.vendor,
+      tool.privacy_summary,
+      tool.data_handling,
+      tool.review_notes,
+      tool.last_reviewed_at,
       tool.github_url,
       tool.platform,
       tool.sha256_hash,
-      tool.safety_score,
       tool.last_scan_date,
       tool.downloads,
     ],
@@ -315,41 +428,87 @@ interface ToolWriteInput {
   category: string;
   icon: string;
   tool_kind: "download" | "web";
+  delivery_mode: "redirect" | "embedded" | "browserRuntime" | "download";
   download_url: string;
   web_url: string;
+  embed_allowed: number;
+  embed_url: string;
+  runtime_supported: number;
+  runtime_entrypoint: string;
+  sandbox_level: "strict" | "standard" | "trusted";
+  trusted_domains: string;
+  vendor: string;
+  privacy_summary: string;
+  data_handling: "low" | "medium" | "high";
+  review_notes: string;
+  last_reviewed_at: string | null;
   github_url: string;
   platform: string;
   sha256_hash: string | null;
-  safety_score: number;
   last_scan_date: string | null;
 }
 
+function withToolDefaults(tool: ToolWriteInput): ToolWriteInput {
+  return {
+    ...tool,
+    delivery_mode: tool.delivery_mode ?? "download",
+    download_url: tool.download_url ?? "",
+    web_url: tool.web_url ?? "",
+    embed_allowed: tool.embed_allowed ?? 0,
+    embed_url: tool.embed_url ?? "",
+    runtime_supported: tool.runtime_supported ?? 0,
+    runtime_entrypoint: tool.runtime_entrypoint ?? "",
+    sandbox_level: tool.sandbox_level ?? "strict",
+    trusted_domains: tool.trusted_domains ?? "",
+    vendor: tool.vendor ?? "",
+    privacy_summary: tool.privacy_summary ?? "",
+    data_handling: tool.data_handling ?? "medium",
+    review_notes: tool.review_notes ?? "",
+    last_reviewed_at: tool.last_reviewed_at ?? null,
+  };
+}
+
 export async function createTool(tool: ToolWriteInput) {
+  const t = withToolDefaults(tool);
   return execute(
     `INSERT INTO tools (
-      name, slug, description, short_description, category, icon, tool_kind, download_url, web_url, github_url,
-      platform, sha256_hash, safety_score, last_scan_date
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      name, slug, description, short_description, category, icon, tool_kind, delivery_mode, download_url, web_url,
+      embed_allowed, embed_url, runtime_supported, runtime_entrypoint, sandbox_level, trusted_domains, vendor,
+      privacy_summary, data_handling, review_notes, last_reviewed_at, github_url, platform, sha256_hash,
+      last_scan_date
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      tool.name,
-      tool.slug,
-      tool.description,
-      tool.short_description,
-      tool.category,
-      tool.icon,
-      tool.tool_kind,
-      tool.download_url,
-      tool.web_url,
-      tool.github_url,
-      tool.platform,
-      tool.sha256_hash,
-      tool.safety_score,
-      tool.last_scan_date,
+      t.name,
+      t.slug,
+      t.description,
+      t.short_description,
+      t.category,
+      t.icon,
+      t.tool_kind,
+      t.delivery_mode,
+      t.download_url,
+      t.web_url,
+      t.embed_allowed,
+      t.embed_url,
+      t.runtime_supported,
+      t.runtime_entrypoint,
+      t.sandbox_level,
+      t.trusted_domains,
+      t.vendor,
+      t.privacy_summary,
+      t.data_handling,
+      t.review_notes,
+      t.last_reviewed_at,
+      t.github_url,
+      t.platform,
+      t.sha256_hash,
+      t.last_scan_date,
     ] as InValue[]
   );
 }
 
 export async function updateTool(slug: string, tool: ToolWriteInput) {
+  const t = withToolDefaults(tool);
   return execute(
     `UPDATE tools SET
       name = ?,
@@ -358,29 +517,51 @@ export async function updateTool(slug: string, tool: ToolWriteInput) {
       category = ?,
       icon = ?,
       tool_kind = ?,
+      delivery_mode = ?,
       download_url = ?,
       web_url = ?,
+      embed_allowed = ?,
+      embed_url = ?,
+      runtime_supported = ?,
+      runtime_entrypoint = ?,
+      sandbox_level = ?,
+      trusted_domains = ?,
+      vendor = ?,
+      privacy_summary = ?,
+      data_handling = ?,
+      review_notes = ?,
+      last_reviewed_at = ?,
       github_url = ?,
       platform = ?,
       sha256_hash = ?,
-      safety_score = ?,
       last_scan_date = ?,
       updated_at = datetime('now')
     WHERE slug = ?`,
     [
-      tool.name,
-      tool.description,
-      tool.short_description,
-      tool.category,
-      tool.icon,
-      tool.tool_kind,
-      tool.download_url,
-      tool.web_url,
-      tool.github_url,
-      tool.platform,
-      tool.sha256_hash,
-      tool.safety_score,
-      tool.last_scan_date,
+      t.name,
+      t.description,
+      t.short_description,
+      t.category,
+      t.icon,
+      t.tool_kind,
+      t.delivery_mode,
+      t.download_url,
+      t.web_url,
+      t.embed_allowed,
+      t.embed_url,
+      t.runtime_supported,
+      t.runtime_entrypoint,
+      t.sandbox_level,
+      t.trusted_domains,
+      t.vendor,
+      t.privacy_summary,
+      t.data_handling,
+      t.review_notes,
+      t.last_reviewed_at,
+      t.github_url,
+      t.platform,
+      t.sha256_hash,
+      t.last_scan_date,
       slug,
     ] as InValue[]
   );
@@ -411,6 +592,13 @@ export async function getTotalDownloads(): Promise<number> {
     "SELECT COALESCE(SUM(downloads), 0) as total FROM tools"
   );
   return Number(row?.total ?? 0);
+}
+
+export async function getReviewedToolCount(): Promise<number> {
+  const row = await queryOne<{ count: number | string }>(
+    "SELECT COUNT(*) as count FROM tools WHERE last_reviewed_at IS NOT NULL AND TRIM(last_reviewed_at) != ''"
+  );
+  return Number(row?.count ?? 0);
 }
 
 // --- Tool Requests ---

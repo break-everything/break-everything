@@ -48,6 +48,10 @@ import {
   GET as getRequests,
   POST as postRequest,
 } from "@/app/api/requests/route";
+import {
+  PATCH as patchRequestById,
+  DELETE as deleteRequestById,
+} from "@/app/api/requests/[id]/route";
 
 beforeAll(async () => {
   if (!fs.existsSync(TEST_DB_DIR)) {
@@ -82,7 +86,7 @@ async function loginAsAdmin() {
 }
 
 function jsonRequest(url: string, method: string, body?: object): NextRequest {
-  const init: RequestInit = {
+  const init: { method: string; headers: Record<string, string>; body?: string } = {
     method,
     headers: {
       "Content-Type": "application/json",
@@ -432,5 +436,91 @@ describe("Requests API", () => {
     const data = await res.json();
     expect(data.requests.length).toBeGreaterThanOrEqual(1);
     expect(data.requests[0].tool_name).toBe("VS Code Alternative");
+  });
+
+  it("PATCH /api/requests/[id] is admin-only", async () => {
+    const req = jsonRequest("http://localhost/api/requests/1", "PATCH", {
+      status: "approved",
+    });
+    const res = await patchRequestById(req, { params: Promise.resolve({ id: "1" }) });
+    expect(res.status).toBe(401);
+  });
+
+  it("PATCH /api/requests/[id] rejects invalid id and status", async () => {
+    await loginAsAdmin();
+
+    const badIdReq = jsonRequest("http://localhost/api/requests/nope", "PATCH", {
+      status: "approved",
+    });
+    const badIdRes = await patchRequestById(badIdReq, {
+      params: Promise.resolve({ id: "nope" }),
+    });
+    expect(badIdRes.status).toBe(400);
+
+    const badStatusReq = jsonRequest("http://localhost/api/requests/1", "PATCH", {
+      status: "not-a-status",
+    });
+    const badStatusRes = await patchRequestById(badStatusReq, {
+      params: Promise.resolve({ id: "1" }),
+    });
+    expect(badStatusRes.status).toBe(400);
+  });
+
+  it("PATCH /api/requests/[id] updates request status when authenticated", async () => {
+    const uniqueName = `Request-${Date.now()}`;
+    const createReq = jsonRequest("http://localhost/api/requests", "POST", {
+      tool_name: uniqueName,
+      description: "Needs review",
+    });
+    expect((await postRequest(createReq)).status).toBe(201);
+
+    await loginAsAdmin();
+    const listRes = await getRequests(jsonRequest("http://localhost/api/requests", "GET"));
+    const listData = await listRes.json();
+    const created = listData.requests.find(
+      (r: { id: number; tool_name: string }) => r.tool_name === uniqueName
+    );
+    expect(created).toBeDefined();
+
+    const patchReq = jsonRequest(`http://localhost/api/requests/${created.id}`, "PATCH", {
+      status: "approved",
+    });
+    const patchRes = await patchRequestById(patchReq, {
+      params: Promise.resolve({ id: String(created.id) }),
+    });
+    expect(patchRes.status).toBe(200);
+
+    const verifyRes = await getRequests(jsonRequest("http://localhost/api/requests", "GET"));
+    const verifyData = await verifyRes.json();
+    const updated = verifyData.requests.find((r: { id: number }) => r.id === created.id);
+    expect(updated.status).toBe("approved");
+  });
+
+  it("DELETE /api/requests/[id] removes request when authenticated", async () => {
+    const uniqueName = `Delete-${Date.now()}`;
+    const createReq = jsonRequest("http://localhost/api/requests", "POST", {
+      tool_name: uniqueName,
+      description: "To be deleted",
+    });
+    expect((await postRequest(createReq)).status).toBe(201);
+
+    await loginAsAdmin();
+    const listRes = await getRequests(jsonRequest("http://localhost/api/requests", "GET"));
+    const listData = await listRes.json();
+    const created = listData.requests.find(
+      (r: { id: number; tool_name: string }) => r.tool_name === uniqueName
+    );
+    expect(created).toBeDefined();
+
+    const delReq = jsonRequest(`http://localhost/api/requests/${created.id}`, "DELETE");
+    const delRes = await deleteRequestById(delReq, {
+      params: Promise.resolve({ id: String(created.id) }),
+    });
+    expect(delRes.status).toBe(200);
+
+    const verifyRes = await getRequests(jsonRequest("http://localhost/api/requests", "GET"));
+    const verifyData = await verifyRes.json();
+    const deleted = verifyData.requests.find((r: { id: number }) => r.id === created.id);
+    expect(deleted).toBeUndefined();
   });
 });

@@ -30,6 +30,7 @@ import {
   verifyAdminPassword,
   getCategories,
   getToolCount,
+  getReviewedToolCount,
   getTotalDownloads,
   createToolRequest,
   getAllToolRequests,
@@ -114,6 +115,10 @@ describe("Tools CRUD", () => {
     expect(total).toBe(12450 + 8320 + 5640);
   });
 
+  it("getReviewedToolCount returns count of tools with review dates", async () => {
+    expect(await getReviewedToolCount()).toBe(3);
+  });
+
   it("createTool adds a new tool", async () => {
     await createTool({
       name: "TestTool",
@@ -128,14 +133,12 @@ describe("Tools CRUD", () => {
       github_url: "https://github.com/test/test",
       platform: "windows",
       sha256_hash: "abc123",
-      safety_score: 90,
       last_scan_date: "2026-04-01",
     });
 
     const tool = (await getToolBySlug("test-tool")) as Tool;
     expect(tool).toBeDefined();
     expect(tool.name).toBe("TestTool");
-    expect(tool.safety_score).toBe(90);
     expect(await getToolCount()).toBe(4);
   });
 
@@ -154,7 +157,6 @@ describe("Tools CRUD", () => {
         github_url: "https://github.com/test",
         platform: "windows",
         sha256_hash: null,
-        safety_score: 100,
         last_scan_date: null,
       })
     ).rejects.toThrow();
@@ -173,14 +175,12 @@ describe("Tools CRUD", () => {
       github_url: "https://github.com/test/test",
       platform: "windows,mac",
       sha256_hash: "def456",
-      safety_score: 95,
       last_scan_date: "2026-04-05",
     });
 
     const tool = (await getToolBySlug("test-tool")) as Tool;
     expect(tool.name).toBe("TestTool Updated");
     expect(tool.platform).toBe("windows,mac");
-    expect(tool.safety_score).toBe(95);
   });
 
   it("deleteTool removes the tool", async () => {
