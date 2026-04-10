@@ -22,10 +22,10 @@ export default async function ToolEmbedPage({
   return (
     <div className="px-6 py-10">
       <div className="mx-auto max-w-6xl space-y-4">
-        <div className="glass-card rounded-xl p-4 text-sm text-foreground/60">
+        <div className="glass-card p-4 text-sm text-foreground/60">
           This embedded tool runs in a sandbox with {tool.sandbox_level} restrictions.
         </div>
-        <div className="rounded-2xl overflow-hidden border border-card-border">
+        <div className="rounded-none overflow-hidden border-2 border-card-border">
           <iframe
             src={targetUrl}
             title={`${tool.name} embedded`}

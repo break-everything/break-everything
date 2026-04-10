@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
+/* Workshop / blueprint / construction — tokens keep Tailwind names (accent-purple, etc.) */
 :root {
-  --background: #07060b;
-  --foreground: #e8e6f0;
-  --accent-purple: #8b5cf6;
-  --accent-blue: #3b82f6;
-  --accent-cyan: #06b6d4;
-  --card-bg: rgba(255, 255, 255, 0.04);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-hover: rgba(255, 255, 255, 0.07);
+  --background: #0b0e12;
+  --foreground: #e6e9ef;
+  /* Primary: tool / hazard amber */
+  --accent-purple: #e8933a;
+  /* Secondary: blueprint steel */
+  --accent-blue: #5b8fc7;
+  /* Tertiary: hi-vis / creative lime */
+  --accent-cyan: #b8e632;
+  --card-bg: rgba(18, 22, 30, 0.72);
+  --card-border: rgba(91, 143, 199, 0.18);
+  --card-hover: rgba(26, 32, 44, 0.88);
 }
 
 @theme inline {
@@ -25,13 +29,23 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: radial-gradient(
+    ellipse 100% 60% at 50% -15%,
+    rgba(91, 143, 199, 0.12),
+    transparent 55%
+  );
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue), var(--accent-cyan));
+  background: linear-gradient(
+    125deg,
+    var(--accent-purple) 0%,
+    var(--accent-blue) 45%,
+    var(--accent-cyan) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -40,14 +54,16 @@ body {
 .glass-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.3s ease;
+  border-radius: 0;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .glass-card:hover {
   background: var(--card-hover);
-  border-color: rgba(139, 92, 246, 0.2);
+  border-color: rgba(232, 147, 58, 0.45);
   transform: translateY(-2px);
 }
 
@@ -61,7 +77,12 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue), var(--accent-cyan));
+  background: linear-gradient(
+    135deg,
+    var(--accent-purple),
+    var(--accent-blue),
+    var(--accent-cyan)
+  );
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
@@ -70,31 +91,61 @@ body {
 }
 
 .glow-purple {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 40px rgba(232, 147, 58, 0.12);
 }
 
 .glow-blue {
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 36px rgba(91, 143, 199, 0.14);
+}
+
+/* Subtle drafting-table motion */
+@keyframes grid-drift {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 32px 32px, 160px 160px;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(3deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.65;
+  }
 }
 
 .animate-float {
-  animation: float 8s ease-in-out infinite;
+  animation: float 10s ease-in-out infinite;
 }
 
 .animate-float-delayed {
-  animation: float 10s ease-in-out 2s infinite;
+  animation: float 12s ease-in-out 2.5s infinite;
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 4s ease-in-out infinite;
+  animation: pulse-glow 5s ease-in-out infinite;
 }
+
+.build-grid-drift {
+  animation: grid-drift 120s linear infinite;
+}
+
+/* Small flat badges — square corners */
+.geo-badge {
+  border-radius: 0;
+}
+

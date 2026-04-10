@@ -62,7 +62,7 @@ export default function RequestToolForm() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm glass-card text-foreground/70 hover:text-foreground gradient-border"
+        className="inline-flex items-center gap-2 px-5 py-2.5 font-medium text-sm glass-card text-foreground/70 hover:text-foreground gradient-border"
       >
         <svg
           className="w-4 h-4"
@@ -83,7 +83,7 @@ export default function RequestToolForm() {
   }
 
   return (
-    <div className="glass-card rounded-2xl p-6 glow-purple">
+    <div className="glass-card p-6 glow-purple">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-lg font-semibold text-foreground">
           Request a Tool
@@ -100,8 +100,8 @@ export default function RequestToolForm() {
 
       {submitted ? (
         <div className="text-center py-6">
-          <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="w-12 h-12 rounded-none bg-accent-purple/12 border-2 border-accent-blue/30 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-accent-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
           </div>
@@ -111,7 +111,7 @@ export default function RequestToolForm() {
           </p>
           <button
             onClick={handleClose}
-            className="mt-4 px-5 py-2 rounded-xl text-sm font-medium glass-card text-foreground/60 hover:text-foreground"
+            className="mt-4 px-5 py-2 text-sm font-medium glass-card text-foreground/60 hover:text-foreground"
           >
             Close
           </button>

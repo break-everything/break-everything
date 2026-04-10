@@ -17,10 +17,13 @@ export default async function HomePage() {
       {/* Hero Section */}
       <section className="relative px-6 pt-20 pb-24 md:pt-32 md:pb-36">
         <div className="mx-auto max-w-6xl text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-purple/10 border border-accent-purple/20 mb-8">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs font-medium text-accent-purple">
-              100% Free &amp; Open Source
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-none bg-accent-purple/10 border-2 border-accent-blue/30 mb-8">
+            <span
+              className="w-2 h-2 bg-accent-cyan shrink-0 rotate-45 border border-accent-purple/40"
+              aria-hidden
+            />
+            <span className="text-xs font-semibold font-mono uppercase tracking-widest text-accent-cyan/90">
+              Free · Open source
             </span>
           </div>
 
@@ -38,7 +41,7 @@ export default async function HomePage() {
           <div className="flex items-center justify-center gap-4 mb-16">
             <Link
               href="/tools"
-              className="px-6 py-3 rounded-xl font-medium text-sm bg-accent-purple hover:bg-accent-purple/90 text-white transition-all hover:scale-105"
+              className="px-6 py-3 rounded-none font-semibold text-sm bg-accent-purple hover:bg-accent-purple/90 text-background transition-all hover:scale-[1.02] border-2 border-accent-blue/40 shadow-[2px_2px_0_rgba(91,143,199,0.35)]"
             >
               Browse Tools
             </Link>
@@ -46,7 +49,7 @@ export default async function HomePage() {
               href="https://github.com/evansgithubprojects/break-everything"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-xl font-medium text-sm glass-card text-foreground/70 hover:text-foreground"
+              className="px-6 py-3 rounded-none font-medium text-sm glass-card text-foreground/70 hover:text-foreground border-2 border-card-border"
             >
               View on GitHub
             </a>
@@ -79,9 +82,9 @@ export default async function HomePage() {
       {/* Trust Pillars */}
       <section className="px-6 pb-20">
         <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="glass-card rounded-2xl p-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="glass-card p-6 text-center">
+            <div className="w-12 h-12 rounded-none bg-accent-purple/12 border-2 border-accent-purple/30 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-accent-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
               </svg>
             </div>
@@ -91,9 +94,9 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="glass-card rounded-2xl p-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="glass-card p-6 text-center">
+            <div className="w-12 h-12 rounded-none bg-accent-blue/12 border-2 border-accent-blue/30 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
               </svg>
             </div>
@@ -103,9 +106,9 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="glass-card rounded-2xl p-6 text-center">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="glass-card p-6 text-center">
+            <div className="w-12 h-12 rounded-none bg-accent-cyan/10 border-2 border-accent-cyan/30 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-accent-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>

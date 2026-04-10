@@ -47,10 +47,10 @@ export default function ToolsPage() {
         <div className="flex items-center gap-2 mb-8 flex-wrap">
           <button
             onClick={() => setActiveCategory("all")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-none text-sm font-medium border-2 transition-colors ${
               activeCategory === "all"
-                ? "bg-accent-purple/15 text-accent-purple border border-accent-purple/30"
-                : "glass-card text-foreground/60 hover:text-foreground"
+                ? "bg-accent-purple/15 text-accent-purple border-accent-purple/40"
+                : "border-card-border text-foreground/60 hover:text-foreground hover:border-accent-blue/35 bg-white/[0.03]"
             }`}
           >
             All
@@ -59,10 +59,10 @@ export default function ToolsPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
+              className={`px-4 py-2 rounded-none text-sm font-medium border-2 transition-colors capitalize ${
                 activeCategory === cat
-                  ? "bg-accent-purple/15 text-accent-purple border border-accent-purple/30"
-                  : "glass-card text-foreground/60 hover:text-foreground"
+                  ? "bg-accent-purple/15 text-accent-purple border-accent-purple/40"
+                  : "border-card-border text-foreground/60 hover:text-foreground hover:border-accent-blue/35 bg-white/[0.03]"
               }`}
             >
               {cat}
@@ -76,7 +76,7 @@ export default function ToolsPage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="glass-card rounded-2xl p-6 h-48 animate-pulse"
+                className="glass-card p-6 h-48 animate-pulse"
               />
             ))}
           </div>

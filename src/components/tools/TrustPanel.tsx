@@ -6,7 +6,7 @@ export default function TrustPanel({ tool }: { tool: Tool }) {
     : "Not reviewed yet";
 
   return (
-    <div className="glass-card rounded-2xl p-6 space-y-3">
+    <div className="glass-card p-6 space-y-3">
       <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
         Listing details
       </h3>

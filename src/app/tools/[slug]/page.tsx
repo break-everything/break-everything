@@ -39,7 +39,7 @@ export default async function ToolDetailPage({
 
         {/* Tool Header */}
         <div className="flex items-start gap-5 mb-8">
-          <div className="w-16 h-16 rounded-2xl glass-card flex items-center justify-center text-3xl shrink-0">
+          <div className="w-16 h-16 glass-card flex items-center justify-center text-3xl shrink-0">
             {tool.icon}
           </div>
           <div className="flex-1 min-w-0">
@@ -47,8 +47,8 @@ export default async function ToolDetailPage({
               <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                 {tool.name}
               </h1>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-xs font-medium bg-accent-cyan/10 text-accent-cyan border-2 border-accent-cyan/35 font-mono uppercase tracking-wide">
+                <span className="w-1.5 h-1.5 bg-accent-cyan rotate-45 shrink-0" />
                 Open source
               </span>
             </div>
@@ -65,7 +65,7 @@ export default async function ToolDetailPage({
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
-            <div className="glass-card rounded-2xl p-6">
+            <div className="glass-card p-6">
               <h2 className="text-lg font-semibold text-foreground mb-4">
                 About this tool
               </h2>
@@ -80,7 +80,7 @@ export default async function ToolDetailPage({
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Info Card */}
-            <div className="glass-card rounded-2xl p-6 space-y-4">
+            <div className="glass-card p-6 space-y-4">
               <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
                 Details
               </h3>
@@ -98,7 +98,7 @@ export default async function ToolDetailPage({
                     {platformBadges.map((p) => (
                       <span
                         key={p}
-                        className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 text-foreground/60 uppercase tracking-wider"
+                        className="geo-badge px-2 py-0.5 text-[11px] font-medium bg-white/5 text-foreground/60 uppercase tracking-wider font-mono border border-card-border"
                       >
                         {p}
                       </span>
@@ -135,7 +135,7 @@ export default async function ToolDetailPage({
               href={tool.github_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block glass-card rounded-2xl p-6 group"
+              className="block glass-card p-6 group"
             >
               <div className="flex items-center gap-3 mb-3">
                 <svg

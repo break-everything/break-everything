@@ -158,7 +158,7 @@ export default function AdminPage() {
     return (
       <div className="px-6 py-20 flex items-center justify-center min-h-[60vh]">
         <div className="w-full max-w-sm">
-          <div className="glass-card rounded-2xl p-8">
+          <div className="glass-card p-8">
             <div className="text-center mb-8">
               <div className="w-12 h-12 rounded-xl gradient-border bg-background flex items-center justify-center mx-auto mb-4">
                 <svg
@@ -237,7 +237,7 @@ export default function AdminPage() {
             )}
             <button
               onClick={handleLogout}
-              className="px-5 py-2.5 rounded-xl font-medium text-sm glass-card text-foreground/60 hover:text-foreground"
+              className="px-5 py-2.5 font-medium text-sm glass-card text-foreground/60 hover:text-foreground"
             >
               Logout
             </button>
@@ -246,7 +246,7 @@ export default function AdminPage() {
 
         {/* Add/Edit Form */}
         {showForm && (
-          <div className="glass-card rounded-2xl p-6 mb-8">
+          <div className="glass-card p-6 mb-8">
             <AdminToolForm
               key={editingTool?.slug ?? "new"}
               tool={editingTool}
@@ -285,7 +285,7 @@ export default function AdminPage() {
           </div>
 
           {filteredRequests.length === 0 ? (
-            <div className="glass-card rounded-xl p-8 text-center">
+            <div className="glass-card p-8 text-center">
               <p className="text-foreground/40 text-sm">
                 {requestFilter === "pending"
                   ? "No pending requests."
@@ -297,7 +297,7 @@ export default function AdminPage() {
               {filteredRequests.map((req) => (
                 <div
                   key={req.id}
-                  className="glass-card rounded-xl p-4 flex items-start gap-4"
+                  className="glass-card p-4 flex items-start gap-4"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -393,7 +393,7 @@ export default function AdminPage() {
                 return (
               <div
                 key={tool.id}
-                className="glass-card rounded-xl p-5 flex items-center justify-between"
+                className="glass-card p-5 flex items-center justify-between"
               >
                 <div className="flex items-center gap-4 min-w-0">
                   <span className="text-2xl">{tool.icon}</span>
@@ -439,7 +439,7 @@ export default function AdminPage() {
                 <div className="flex items-center gap-2 shrink-0 ml-4">
                   <button
                     onClick={() => handleEdit(tool)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium glass-card text-foreground/60 hover:text-foreground"
+                    className="px-3 py-1.5 text-xs font-medium glass-card text-foreground/60 hover:text-foreground"
                   >
                     Edit
                   </button>

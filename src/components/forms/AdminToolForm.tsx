@@ -443,7 +443,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2.5 rounded-xl font-medium text-sm glass-card text-foreground/60 hover:text-foreground"
+          className="px-6 py-2.5 font-medium text-sm glass-card text-foreground/60 hover:text-foreground"
         >
           Cancel
         </button>

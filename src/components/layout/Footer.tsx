@@ -38,16 +38,16 @@ export default function Footer() {
               What we list
             </h4>
             <ul className="space-y-2">
-              <li className="text-sm text-foreground/50 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500" />
+              <li className="text-sm text-foreground/50 flex items-center gap-2.5">
+                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-purple/80 border border-accent-blue/40" />
                 Open-source projects with a public repo link
               </li>
-              <li className="text-sm text-foreground/50 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500" />
+              <li className="text-sm text-foreground/50 flex items-center gap-2.5">
+                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-blue/70 border border-accent-cyan/35" />
                 Categories and platforms called out on each card
               </li>
-              <li className="text-sm text-foreground/50 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500" />
+              <li className="text-sm text-foreground/50 flex items-center gap-2.5">
+                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-cyan/70 border border-accent-purple/30" />
                 Review dates you can see on each tool page
               </li>
             </ul>

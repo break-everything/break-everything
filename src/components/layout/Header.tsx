@@ -12,11 +12,18 @@ export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-card-border bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b-2 border-card-border bg-background/85 backdrop-blur-xl shadow-[inset_0_-1px_0_rgba(91,143,199,0.12)]">
       <div className="mx-auto max-w-6xl flex items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg gradient-border flex items-center justify-center bg-background">
-            <span className="text-sm font-bold gradient-text">B</span>
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="relative w-9 h-9 rounded-md gradient-border bg-card-bg flex items-center justify-center overflow-hidden shrink-0">
+            <div
+              className="absolute inset-0 bg-gradient-to-br from-accent-purple/35 via-transparent to-accent-blue/25"
+              style={{ clipPath: "polygon(0 0, 100% 0, 0 100%)" }}
+              aria-hidden
+            />
+            <span className="relative text-sm font-black tracking-tighter font-mono text-foreground">
+              B
+            </span>
           </div>
           <span className="text-lg font-bold tracking-tight">
             <span className="gradient-text">Break</span>{" "}
@@ -31,10 +38,10 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`pl-3 pr-4 py-2 text-sm font-medium border-l-2 transition-colors ${
                   isActive
-                    ? "bg-accent-purple/10 text-accent-purple"
-                    : "text-foreground/60 hover:text-foreground hover:bg-white/5"
+                    ? "border-accent-purple text-accent-purple bg-accent-purple/8"
+                    : "border-transparent text-foreground/60 hover:text-foreground hover:bg-white/5"
                 }`}
               >
                 {link.label}
@@ -45,7 +52,7 @@ export default function Header() {
             href="https://github.com/evansgithubprojects/break-everything"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-2 px-4 py-2 rounded-lg text-sm font-medium text-foreground/60 hover:text-foreground hover:bg-white/5 transition-colors"
+            className="ml-2 px-4 py-2 text-sm font-medium text-foreground/60 hover:text-foreground hover:bg-white/5 transition-colors border border-transparent hover:border-card-border rounded-none"
           >
             GitHub
           </a>

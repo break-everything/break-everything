@@ -5,13 +5,13 @@ import ToolAccessLinks from "./ToolAccessLinks";
 function kindBadge(k: ToolKind) {
   if (k === "web") {
     return (
-      <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-sky-500/15 text-sky-300 border border-sky-500/25 uppercase tracking-wider">
+      <span className="geo-badge px-2 py-0.5 text-[10px] font-medium bg-sky-500/15 text-sky-300 border-2 border-sky-500/30 uppercase tracking-wider font-mono">
         Web
       </span>
     );
   }
   return (
-    <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-violet-500/15 text-violet-300 border border-violet-500/25 uppercase tracking-wider">
+    <span className="geo-badge px-2 py-0.5 text-[10px] font-medium bg-violet-500/15 text-violet-300 border-2 border-violet-500/30 uppercase tracking-wider font-mono">
       Download
     </span>
   );
@@ -22,7 +22,7 @@ export default function ToolCard({ tool }: { tool: Tool }) {
   const k: ToolKind = tool.tool_kind === "web" ? "web" : "download";
 
   return (
-    <div className="glass-card rounded-2xl p-6 h-full flex flex-col group hover:border-accent-purple/20 transition-colors">
+    <div className="glass-card p-6 h-full flex flex-col group hover:border-accent-purple/20 transition-colors">
       <div className="flex items-start justify-between mb-4">
         <span className="text-3xl">{tool.icon}</span>
         <div className="shrink-0">{kindBadge(k)}</div>
@@ -40,13 +40,13 @@ export default function ToolCard({ tool }: { tool: Tool }) {
           {platformBadges.map((p) => (
             <span
               key={p}
-              className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 text-foreground/50 uppercase tracking-wider"
+              className="geo-badge px-2 py-0.5 text-[11px] font-medium bg-white/5 text-foreground/50 uppercase tracking-wider font-mono"
             >
               {p}
             </span>
           ))}
         </div>
-        <span className="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-accent-purple/10 text-accent-purple capitalize shrink-0">
+        <span className="geo-badge px-2.5 py-0.5 text-[11px] font-medium bg-accent-purple/10 text-accent-purple capitalize shrink-0 border border-accent-purple/25">
           {tool.category}
         </span>
       </div>
