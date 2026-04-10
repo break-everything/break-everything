@@ -6,42 +6,65 @@ This project follows Next.js App Router conventions and keeps server-only module
 
 ```text
 src/
-|-- app/                    # Next.js routes, layouts, pages, and API handlers
-|   |-- admin/              # Admin dashboard route segment
+|-- app/                    # Next.js routes, layouts, pages, API handlers
+|   |-- admin/              # Admin dashboard (tools, requests, analytics tab)
 |   |-- api/                # HTTP route handlers
-|   |   |-- __tests__/      # API route integration tests (co-located)
-|   |   |-- auth/           # Auth endpoints
-|   |   |-- events/         # Analytics/event endpoints
+|   |   |-- __tests__/      # API integration tests (co-located)
+|   |   |-- analytics/      # Admin analytics summary (GET /api/analytics)
+|   |   |-- auth/           # Session endpoints
+|   |   |-- events/         # Public analytics ingest (POST /api/events)
 |   |   |-- requests/       # Tool request endpoints
 |   |   `-- tools/          # Tool CRUD endpoints
-|   |-- tools/              # Public tool listing/detail and embed/run routes
-|   |-- globals.css         # Global styles
-|   `-- layout.tsx          # Root layout shell
-|-- components/             # Reusable UI components
-|   |-- forms/              # Form-centric components
-|   |-- layout/             # App shell components (header/footer/background)
-|   |-- tools/              # Tool-domain display components and helpers
-|   `-- index.ts            # Optional barrel exports for component domains
-|-- types/                  # Shared TypeScript domain types
-|   |-- tool.ts             # Tool listing shape and related unions
-|   |-- tool-request.ts     # User-submitted tool request shape
-|   `-- index.ts            # Barrel exports for shared types
-|-- server/                 # Server-only modules (DB, auth, validation, rate limits)
-|   |-- __tests__/          # Server module tests (co-located)
-|   |-- api-response.ts     # Shared API response helpers
-|   |-- validation.ts       # Shared request validation
-|   `-- index.ts            # Barrel exports for server modules
-`-- test-env.ts             # Jest setup (env flags for tests)
+|   |-- tools/              # Public tool listing, detail, embed/run routes
+|   |-- globals.css
+|   `-- layout.tsx
+|-- analytics/              # Client-only analytics helpers (browser fetch to /api/events)
+|   |-- client.ts
+|   `-- index.ts
+|-- components/
+|   |-- admin/              # Admin-only UI (e.g. analytics dashboard panel)
+|   |-- forms/
+|   |-- layout/
+|   |-- tools/
+|   `-- index.ts
+|-- types/                  # Shared TypeScript types
+|   |-- analytics.ts        # AnalyticsSummary (API + admin UI)
+|   |-- tool.ts
+|   |-- tool-request.ts
+|   `-- index.ts
+|-- server/
+|   |-- analytics-ingest.ts # Rules for POST /api/events (allowed events, action format)
+|   |-- api-response.ts
+|   |-- auth.ts
+|   |-- db.ts               # DB access + recordAnalyticsEvent / getAnalyticsSummary
+|   |-- rate-limit.ts       # Includes analyticsIngest bucket
+|   |-- validation.ts
+|   |-- __tests__/
+|   `-- index.ts
+`-- test-env.ts             # Jest setup
 
-public/                     # Static assets served directly
-data/                       # SQLite databases and local test DBs
+public/
+data/                       # SQLite / local DB files
 ```
+
+## Analytics (where things live)
+
+| Concern | Location |
+|--------|-----------|
+| Ingest HTTP API | `src/app/api/events/route.ts` |
+| Admin summary HTTP API | `src/app/api/analytics/route.ts` |
+| Event name / action validation (server) | `src/server/analytics-ingest.ts` |
+| Persist + aggregate queries | `src/server/db.ts` (`recordAnalyticsEvent`, `getAnalyticsSummary`) |
+| Shared summary type | `src/types/analytics.ts` |
+| Browser tracking helper | `src/analytics/client.ts` (import via `@/analytics`) |
+| Admin charts / filters UI | `src/components/admin/AdminAnalyticsPanel.tsx` |
 
 ## Conventions
 
 - Keep Next.js routing logic in `src/app` only.
-- Keep reusable UI in `src/components`, organized by role (`layout`, `forms`, `tools`).
-- Keep shared domain types in `src/types` (not inside UI component files or duplicated in pages).
+- Keep reusable UI in `src/components`, organized by role (`layout`, `forms`, `tools`, `admin`).
+- Keep shared domain types in `src/types` (not duplicated in UI files).
 - Keep all server-only logic in `src/server`; do not import it into Client Components.
+- Keep client analytics calls in `src/analytics` (not a generic `lib` grab-bag).
 - Co-locate tests under the nearest module `__tests__` directory.
 - Use `@/` absolute imports and avoid deep relative paths.

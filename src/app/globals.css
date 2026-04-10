@@ -1,29 +1,26 @@
 @import "tailwindcss";
 
-/* Workshop / blueprint / construction — tokens keep Tailwind names (accent-purple, etc.) */
+/* Theme tokens — names match actual hues (amber CTA, steel blueprint, lime hi-vis) */
 :root {
   --background: #0b0e12;
   --foreground: #e6e9ef;
-  /* Primary: tool / hazard amber */
-  --accent-purple: #e8933a;
-  /* Secondary: blueprint steel */
-  --accent-blue: #5b8fc7;
-  /* Tertiary: hi-vis / creative lime */
-  --accent-cyan: #b8e632;
-  --card-bg: rgba(18, 22, 30, 0.72);
-  --card-border: rgba(91, 143, 199, 0.18);
-  --card-hover: rgba(26, 32, 44, 0.88);
+  --accent-amber: #e8933a;
+  --accent-steel: #5b8fc7;
+  --accent-lime: #b8e632;
+  --surface-panel: rgba(18, 22, 30, 0.72);
+  --surface-border: rgba(91, 143, 199, 0.18);
+  --surface-hover: rgba(26, 32, 44, 0.88);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-accent-purple: var(--accent-purple);
-  --color-accent-blue: var(--accent-blue);
-  --color-accent-cyan: var(--accent-cyan);
-  --color-card-bg: var(--card-bg);
-  --color-card-border: var(--card-border);
-  --color-card-hover: var(--card-hover);
+  --color-accent-amber: var(--accent-amber);
+  --color-accent-steel: var(--accent-steel);
+  --color-accent-lime: var(--accent-lime);
+  --color-card-bg: var(--surface-panel);
+  --color-card-border: var(--surface-border);
+  --color-card-hover: var(--surface-hover);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -32,7 +29,7 @@ body {
   background-color: var(--background);
   background-image: radial-gradient(
     ellipse 100% 60% at 50% -15%,
-    rgba(91, 143, 199, 0.12),
+    color-mix(in srgb, var(--accent-steel) 12%, transparent),
     transparent 55%
   );
   color: var(--foreground);
@@ -42,9 +39,9 @@ body {
 .gradient-text {
   background: linear-gradient(
     125deg,
-    var(--accent-purple) 0%,
-    var(--accent-blue) 45%,
-    var(--accent-cyan) 100%
+    var(--accent-amber) 0%,
+    var(--accent-steel) 45%,
+    var(--accent-lime) 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -52,8 +49,8 @@ body {
 }
 
 .glass-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background: var(--surface-panel);
+  border: 1px solid var(--surface-border);
   border-radius: 0;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -62,8 +59,8 @@ body {
 }
 
 .glass-card:hover {
-  background: var(--card-hover);
-  border-color: rgba(232, 147, 58, 0.45);
+  background: var(--surface-hover);
+  border-color: color-mix(in srgb, var(--accent-amber) 45%, transparent);
   transform: translateY(-2px);
 }
 
@@ -79,9 +76,9 @@ body {
   padding: 1px;
   background: linear-gradient(
     135deg,
-    var(--accent-purple),
-    var(--accent-blue),
-    var(--accent-cyan)
+    var(--accent-amber),
+    var(--accent-steel),
+    var(--accent-lime)
   );
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -90,12 +87,12 @@ body {
   pointer-events: none;
 }
 
-.glow-purple {
-  box-shadow: 0 0 40px rgba(232, 147, 58, 0.12);
+.glow-amber {
+  box-shadow: 0 0 40px color-mix(in srgb, var(--accent-amber) 12%, transparent);
 }
 
-.glow-blue {
-  box-shadow: 0 0 36px rgba(91, 143, 199, 0.14);
+.glow-steel {
+  box-shadow: 0 0 36px color-mix(in srgb, var(--accent-steel) 14%, transparent);
 }
 
 /* Subtle drafting-table motion */
@@ -148,4 +145,3 @@ body {
 .geo-badge {
   border-radius: 0;
 }
-

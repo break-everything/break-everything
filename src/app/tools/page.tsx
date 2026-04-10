@@ -49,8 +49,8 @@ export default function ToolsPage() {
             onClick={() => setActiveCategory("all")}
             className={`px-4 py-2 rounded-none text-sm font-medium border-2 transition-colors ${
               activeCategory === "all"
-                ? "bg-accent-purple/15 text-accent-purple border-accent-purple/40"
-                : "border-card-border text-foreground/60 hover:text-foreground hover:border-accent-blue/35 bg-white/[0.03]"
+                ? "bg-accent-amber/15 text-accent-amber border-accent-amber/40"
+                : "border-card-border text-foreground/60 hover:text-foreground hover:border-accent-steel/35 bg-white/[0.03]"
             }`}
           >
             All
@@ -61,8 +61,8 @@ export default function ToolsPage() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-none text-sm font-medium border-2 transition-colors capitalize ${
                 activeCategory === cat
-                  ? "bg-accent-purple/15 text-accent-purple border-accent-purple/40"
-                  : "border-card-border text-foreground/60 hover:text-foreground hover:border-accent-blue/35 bg-white/[0.03]"
+                  ? "bg-accent-amber/15 text-accent-amber border-accent-amber/40"
+                  : "border-card-border text-foreground/60 hover:text-foreground hover:border-accent-steel/35 bg-white/[0.03]"
               }`}
             >
               {cat}

@@ -22,14 +22,14 @@ export default function ToolCard({ tool }: { tool: Tool }) {
   const k: ToolKind = tool.tool_kind === "web" ? "web" : "download";
 
   return (
-    <div className="glass-card p-6 h-full flex flex-col group hover:border-accent-purple/20 transition-colors">
+    <div className="glass-card p-6 h-full flex flex-col group hover:border-accent-amber/20 transition-colors">
       <div className="flex items-start justify-between mb-4">
         <span className="text-3xl">{tool.icon}</span>
         <div className="shrink-0">{kindBadge(k)}</div>
       </div>
 
       <Link href={`/tools/${tool.slug}`} className="block flex-1 min-h-0">
-        <h3 className="text-lg font-semibold text-foreground group-hover:text-accent-purple transition-colors mb-1">
+        <h3 className="text-lg font-semibold text-foreground group-hover:text-accent-amber transition-colors mb-1">
           {tool.name}
         </h3>
         <p className="text-sm text-foreground/50 mb-4 line-clamp-3">{tool.short_description}</p>
@@ -46,7 +46,7 @@ export default function ToolCard({ tool }: { tool: Tool }) {
             </span>
           ))}
         </div>
-        <span className="geo-badge px-2.5 py-0.5 text-[11px] font-medium bg-accent-purple/10 text-accent-purple capitalize shrink-0 border border-accent-purple/25">
+        <span className="geo-badge px-2.5 py-0.5 text-[11px] font-medium bg-accent-amber/10 text-accent-amber capitalize shrink-0 border border-accent-amber/25">
           {tool.category}
         </span>
       </div>

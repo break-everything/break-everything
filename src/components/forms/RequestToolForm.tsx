@@ -56,7 +56,7 @@ export default function RequestToolForm() {
   }
 
   const inputClass =
-    "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-card-border text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-accent-purple/50 focus:ring-1 focus:ring-accent-purple/30 transition-colors";
+    "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-card-border text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/30 transition-colors";
 
   if (!open) {
     return (
@@ -83,7 +83,7 @@ export default function RequestToolForm() {
   }
 
   return (
-    <div className="glass-card p-6 glow-purple">
+    <div className="glass-card p-6 glow-amber">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-lg font-semibold text-foreground">
           Request a Tool
@@ -100,8 +100,8 @@ export default function RequestToolForm() {
 
       {submitted ? (
         <div className="text-center py-6">
-          <div className="w-12 h-12 rounded-none bg-accent-purple/12 border-2 border-accent-blue/30 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-accent-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="w-12 h-12 rounded-none bg-accent-amber/12 border-2 border-accent-steel/30 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-accent-lime" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
           </div>
@@ -191,7 +191,7 @@ export default function RequestToolForm() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full px-6 py-2.5 rounded-xl font-medium text-sm bg-accent-purple hover:bg-accent-purple/90 text-white transition-all disabled:opacity-50"
+            className="w-full px-6 py-2.5 rounded-xl font-medium text-sm bg-accent-amber hover:bg-accent-amber/90 text-white transition-all disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Submit Request"}
           </button>

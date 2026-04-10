@@ -39,15 +39,15 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               <li className="text-sm text-foreground/50 flex items-center gap-2.5">
-                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-purple/80 border border-accent-blue/40" />
+                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-amber/80 border border-accent-steel/40" />
                 Open-source projects with a public repo link
               </li>
               <li className="text-sm text-foreground/50 flex items-center gap-2.5">
-                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-blue/70 border border-accent-cyan/35" />
+                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-steel/70 border border-accent-lime/35" />
                 Categories and platforms called out on each card
               </li>
               <li className="text-sm text-foreground/50 flex items-center gap-2.5">
-                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-cyan/70 border border-accent-purple/30" />
+                <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-lime/70 border border-accent-amber/30" />
                 Review dates you can see on each tool page
               </li>
             </ul>

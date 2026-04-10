@@ -47,8 +47,8 @@ export default async function ToolDetailPage({
               <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                 {tool.name}
               </h1>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-xs font-medium bg-accent-cyan/10 text-accent-cyan border-2 border-accent-cyan/35 font-mono uppercase tracking-wide">
-                <span className="w-1.5 h-1.5 bg-accent-cyan rotate-45 shrink-0" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-xs font-medium bg-accent-lime/10 text-accent-lime border-2 border-accent-lime/35 font-mono uppercase tracking-wide">
+                <span className="w-1.5 h-1.5 bg-accent-lime rotate-45 shrink-0" />
                 Open source
               </span>
             </div>

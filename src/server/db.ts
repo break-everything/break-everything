@@ -9,7 +9,7 @@ import {
 import path from "path";
 import fs from "fs";
 import bcrypt from "bcryptjs";
-import type { ToolRequest } from "@/types";
+import type { AnalyticsSummary, ToolRequest } from "@/types";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
@@ -664,15 +664,7 @@ function toSqliteUtcBound(d: Date): string {
   return d.toISOString().slice(0, 19).replace("T", " ");
 }
 
-export interface AnalyticsSummary {
-  range: { since: string; until: string };
-  totals: { all: number; byEvent: { event: string; count: number }[] };
-  uniqueSlugs: number;
-  toolActionClicks: number;
-  byDay: { date: string; count: number }[];
-  topTools: { slug: string; count: number }[];
-  byAction: { action: string; count: number }[];
-}
+export type { AnalyticsSummary };
 
 export async function recordAnalyticsEvent(input: {
   event: string;

@@ -38,6 +38,7 @@ Key areas:
 
 - `src/app` - routes, layouts, pages, API route handlers
 - `src/components` - reusable UI components
+- `src/analytics` - client-side analytics helpers (calls `/api/events`)
 - `src/types` - shared domain TypeScript types
 - `src/server` - server-only modules (database, auth, rate limiting, validation)
 - `data` - local SQLite database files
@@ -56,6 +57,8 @@ Key areas:
 - `GET /api/requests` - list requests (admin)
 - `PATCH /api/requests/[id]` - update request status (admin)
 - `DELETE /api/requests/[id]` - delete request (admin)
+- `POST /api/events` - record analytics events (public, rate-limited)
+- `GET /api/analytics` - analytics aggregates for admin UI (admin session)
 
 ## Contributing
 

@@ -1,17 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { Tool } from "@/types";
-
-interface AnalyticsSummary {
-  range: { since: string; until: string };
-  totals: { all: number; byEvent: { event: string; count: number }[] };
-  uniqueSlugs: number;
-  toolActionClicks: number;
-  byDay: { date: string; count: number }[];
-  topTools: { slug: string; count: number }[];
-  byAction: { action: string; count: number }[];
-}
+import type { AnalyticsSummary, Tool } from "@/types";
 
 const DAY_OPTIONS = [7, 30, 90] as const;
 
@@ -85,7 +75,7 @@ export default function AdminAnalyticsPanel() {
             id="admin-analytics-tool"
             value={toolSlug}
             onChange={(e) => setToolSlug(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-card-border text-foreground text-sm focus:outline-none focus:border-accent-purple/50 focus:ring-1 focus:ring-accent-purple/30 transition-colors"
+            className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-card-border text-foreground text-sm focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/30 transition-colors"
           >
             <option value="">All tools</option>
             {tools.map((t) => (
@@ -107,7 +97,7 @@ export default function AdminAnalyticsPanel() {
                 onClick={() => setDays(d)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   days === d
-                    ? "bg-accent-purple/15 text-accent-purple border border-accent-purple/30"
+                    ? "bg-accent-amber/15 text-accent-amber border border-accent-amber/30"
                     : "text-foreground/40 hover:text-foreground/60"
                 }`}
               >
@@ -120,7 +110,7 @@ export default function AdminAnalyticsPanel() {
 
       {loading && (
         <div className="glass-card p-12 flex justify-center">
-          <div className="w-8 h-8 border-2 border-accent-purple border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-accent-amber border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
@@ -185,7 +175,7 @@ export default function AdminAnalyticsPanel() {
                         className="flex items-center justify-between text-sm gap-3"
                       >
                         <span className="font-mono text-foreground/80 truncate">{row.slug}</span>
-                        <span className="shrink-0 font-semibold text-accent-purple">{row.count}</span>
+                        <span className="shrink-0 font-semibold text-accent-amber">{row.count}</span>
                       </li>
                     ))}
                   </ul>
@@ -224,7 +214,7 @@ export default function AdminAnalyticsPanel() {
                     <span className="w-28 shrink-0 font-mono text-foreground/50">{row.date}</span>
                     <div className="flex-1 h-6 bg-white/5 rounded-lg overflow-hidden border border-card-border/50">
                       <div
-                        className="h-full bg-accent-purple/40 rounded-lg transition-all"
+                        className="h-full bg-accent-amber/40 rounded-lg transition-all"
                         style={{ width: `${(row.count / maxDayCount) * 100}%` }}
                       />
                     </div>

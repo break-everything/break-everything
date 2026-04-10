@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import AdminAnalyticsPanel from "@/components/admin/AdminAnalyticsPanel";
+import { AdminAnalyticsPanel } from "@/components/admin";
 import AdminToolForm from "@/components/forms/AdminToolForm";
 import type { Tool, ToolRequest } from "@/types";
 
@@ -150,7 +150,7 @@ export default function AdminPage() {
   if (checking) {
     return (
       <div className="px-6 py-20 text-center">
-        <div className="w-8 h-8 border-2 border-accent-purple border-t-transparent rounded-full animate-spin mx-auto" />
+        <div className="w-8 h-8 border-2 border-accent-amber border-t-transparent rounded-full animate-spin mx-auto" />
       </div>
     );
   }
@@ -164,7 +164,7 @@ export default function AdminPage() {
             <div className="text-center mb-8">
               <div className="w-12 h-12 rounded-xl gradient-border bg-background flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-6 h-6 text-accent-purple"
+                  className="w-6 h-6 text-accent-amber"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -195,14 +195,14 @@ export default function AdminPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-card-border text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-accent-purple/50 focus:ring-1 focus:ring-accent-purple/30 transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-card-border text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/30 transition-colors"
                 required
                 autoFocus
               />
               <button
                 type="submit"
                 disabled={loggingIn}
-                className="w-full px-6 py-3 rounded-xl font-medium text-sm bg-accent-purple hover:bg-accent-purple/90 text-white transition-all disabled:opacity-50"
+                className="w-full px-6 py-3 rounded-xl font-medium text-sm bg-accent-amber hover:bg-accent-amber/90 text-white transition-all disabled:opacity-50"
               >
                 {loggingIn ? "Logging in..." : "Login"}
               </button>
@@ -233,7 +233,7 @@ export default function AdminPage() {
                   onClick={() => setAdminTab("manage")}
                   className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
                     adminTab === "manage"
-                      ? "bg-accent-purple/15 text-accent-purple border border-accent-purple/30"
+                      ? "bg-accent-amber/15 text-accent-amber border border-accent-amber/30"
                       : "text-foreground/40 hover:text-foreground/60"
                   }`}
                 >
@@ -244,7 +244,7 @@ export default function AdminPage() {
                   onClick={() => setAdminTab("analytics")}
                   className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
                     adminTab === "analytics"
-                      ? "bg-accent-purple/15 text-accent-purple border border-accent-purple/30"
+                      ? "bg-accent-amber/15 text-accent-amber border border-accent-amber/30"
                       : "text-foreground/40 hover:text-foreground/60"
                   }`}
                 >
@@ -257,7 +257,7 @@ export default function AdminPage() {
                     setEditingTool(null);
                     setShowForm(true);
                   }}
-                  className="px-5 py-2.5 rounded-xl font-medium text-sm bg-accent-purple hover:bg-accent-purple/90 text-white transition-all"
+                  className="px-5 py-2.5 rounded-xl font-medium text-sm bg-accent-amber hover:bg-accent-amber/90 text-white transition-all"
                 >
                   + Add Tool
                 </button>
@@ -299,7 +299,7 @@ export default function AdminPage() {
             <div className="flex items-center gap-3">
               <h2 className="text-xl font-bold text-foreground">Tool Requests</h2>
               {pendingCount > 0 && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-accent-purple/15 text-accent-purple border border-accent-purple/30">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-accent-amber/15 text-accent-amber border border-accent-amber/30">
                   {pendingCount} new
                 </span>
               )}
@@ -311,7 +311,7 @@ export default function AdminPage() {
                   onClick={() => setRequestFilter(f)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${
                     requestFilter === f
-                      ? "bg-accent-purple/15 text-accent-purple border border-accent-purple/30"
+                      ? "bg-accent-amber/15 text-accent-amber border border-accent-amber/30"
                       : "text-foreground/40 hover:text-foreground/60"
                   }`}
                 >
@@ -367,7 +367,7 @@ export default function AdminPage() {
                           href={req.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[11px] text-accent-blue hover:text-accent-blue/80 transition-colors"
+                          className="text-[11px] text-accent-steel hover:text-accent-steel/80 transition-colors"
                         >
                           View link
                         </a>

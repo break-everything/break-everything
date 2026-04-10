@@ -34,7 +34,7 @@ export default async function ToolRuntimePage({
           Runtime execution host wiring (WASM/WebContainer/Pyodide) is intentionally feature-flagged and
           can be attached to this route as providers are vetted.
         </p>
-        <Link href={`/tools/${tool.slug}`} className="text-sm text-accent-blue hover:underline">
+        <Link href={`/tools/${tool.slug}`} className="text-sm text-accent-steel hover:underline">
           Back to tool details
         </Link>
       </div>

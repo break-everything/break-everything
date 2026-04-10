@@ -1,5 +1,6 @@
 /**
- * Client-side analytics helpers (non-blocking; failures are swallowed).
+ * Browser-only analytics helpers (non-blocking; failures are swallowed).
+ * POSTs to `/api/events` — see `src/server/analytics-ingest.ts` for allowed payloads.
  */
 
 export async function trackToolActionClick(slug: string, action: string): Promise<void> {

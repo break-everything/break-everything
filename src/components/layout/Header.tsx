@@ -17,7 +17,7 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative w-9 h-9 rounded-md gradient-border bg-card-bg flex items-center justify-center overflow-hidden shrink-0">
             <div
-              className="absolute inset-0 bg-gradient-to-br from-accent-purple/35 via-transparent to-accent-blue/25"
+              className="absolute inset-0 bg-gradient-to-br from-accent-amber/35 via-transparent to-accent-steel/25"
               style={{ clipPath: "polygon(0 0, 100% 0, 0 100%)" }}
               aria-hidden
             />
@@ -40,7 +40,7 @@ export default function Header() {
                 href={link.href}
                 className={`pl-3 pr-4 py-2 text-sm font-medium border-l-2 transition-colors ${
                   isActive
-                    ? "border-accent-purple text-accent-purple bg-accent-purple/8"
+                    ? "border-accent-amber text-accent-amber bg-accent-amber/8"
                     : "border-transparent text-foreground/60 hover:text-foreground hover:bg-white/5"
                 }`}
               >

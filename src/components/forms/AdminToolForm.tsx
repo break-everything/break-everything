@@ -126,7 +126,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
   }
 
   const inputClass =
-    "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-card-border text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-accent-purple/50 focus:ring-1 focus:ring-accent-purple/30 transition-colors";
+    "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-card-border text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/30 transition-colors";
 
   const labelClass = "block text-sm font-medium text-foreground/70 mb-1.5";
 
@@ -436,7 +436,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2.5 rounded-xl font-medium text-sm bg-accent-purple hover:bg-accent-purple/90 text-white transition-all disabled:opacity-50"
+          className="px-6 py-2.5 rounded-xl font-medium text-sm bg-accent-amber hover:bg-accent-amber/90 text-white transition-all disabled:opacity-50"
         >
           {saving ? "Saving..." : isEdit ? "Update Tool" : "Add Tool"}
         </button>
