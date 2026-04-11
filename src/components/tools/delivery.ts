@@ -1,5 +1,27 @@
 import type { Tool } from "@/types";
 
+function isSafeHttpUrl(raw: string): boolean {
+  const s = raw.trim();
+  if (!s) return false;
+  try {
+    const u = new URL(s);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    return Boolean(u.hostname);
+  } catch {
+    return false;
+  }
+}
+
+/** Valid App Store / Play Store links for off-site buttons (client-safe). */
+export function resolveMobileStoreLinks(tool: Tool): { apple?: string; play?: string } {
+  const out: { apple?: string; play?: string } = {};
+  const apple = (tool.app_store_url ?? "").trim();
+  const play = (tool.play_store_url ?? "").trim();
+  if (isSafeHttpUrl(apple)) out.apple = apple;
+  if (isSafeHttpUrl(play)) out.play = play;
+  return out;
+}
+
 export type ToolAction =
   | { type: "redirect"; href: string; label: string }
   | { type: "embed"; href: string; label: string }

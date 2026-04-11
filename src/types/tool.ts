@@ -16,6 +16,10 @@ export interface Tool {
   delivery_mode: ToolDeliveryMode;
   download_url: string;
   web_url: string;
+  /** Apple App Store listing (https://apps.apple.com/...) */
+  app_store_url: string;
+  /** Google Play listing (https://play.google.com/...) */
+  play_store_url: string;
   embed_allowed: number;
   embed_url: string;
   runtime_supported: number;

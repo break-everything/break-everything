@@ -190,6 +190,12 @@ async function migrateToolsColumns(client: Client) {
   if (!colNames.has("last_reviewed_at")) {
     await client.execute("ALTER TABLE tools ADD COLUMN last_reviewed_at TEXT");
   }
+  if (!colNames.has("app_store_url")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN app_store_url TEXT NOT NULL DEFAULT ''");
+  }
+  if (!colNames.has("play_store_url")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN play_store_url TEXT NOT NULL DEFAULT ''");
+  }
 }
 
 /** Legacy columns removed from the product; drop on existing databases (SQLite 3.35+). */
@@ -231,6 +237,8 @@ async function initSchema(client: Client) {
         delivery_mode TEXT NOT NULL DEFAULT 'download' CHECK (delivery_mode IN ('redirect', 'embedded', 'browserRuntime', 'download')),
         download_url TEXT NOT NULL DEFAULT '',
         web_url TEXT NOT NULL DEFAULT '',
+        app_store_url TEXT NOT NULL DEFAULT '',
+        play_store_url TEXT NOT NULL DEFAULT '',
         embed_allowed INTEGER NOT NULL DEFAULT 0,
         embed_url TEXT NOT NULL DEFAULT '',
         runtime_supported INTEGER NOT NULL DEFAULT 0,
@@ -405,9 +413,10 @@ async function seedTools(client: Client) {
   const statements: InStatement[] = seeds.map((tool) => ({
     sql: `INSERT OR IGNORE INTO tools (
       name, slug, description, short_description, category, icon, tool_kind, delivery_mode, download_url, web_url,
+      app_store_url, play_store_url,
       embed_allowed, embed_url, runtime_supported, runtime_entrypoint, sandbox_level, trusted_domains, vendor,
       privacy_summary, data_handling, review_notes, last_reviewed_at, github_url, platform, downloads
-    ) VALUES (?, ?, ?, ?, ?, ?, 'download', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       tool.name,
       tool.slug,
@@ -415,9 +424,12 @@ async function seedTools(client: Client) {
       tool.short_description,
       tool.category,
       tool.icon,
+      "download",
       tool.delivery_mode,
       tool.download_url,
       tool.web_url,
+      "",
+      "",
       tool.embed_allowed,
       tool.embed_url,
       tool.runtime_supported,
@@ -463,6 +475,8 @@ interface ToolWriteInput {
   web_url: string;
   embed_allowed: number;
   embed_url: string;
+  app_store_url: string;
+  play_store_url: string;
   runtime_supported: number;
   runtime_entrypoint: string;
   sandbox_level: "strict" | "standard" | "trusted";
@@ -482,6 +496,8 @@ function withToolDefaults(tool: ToolWriteInput): ToolWriteInput {
     delivery_mode: tool.delivery_mode ?? "download",
     download_url: tool.download_url ?? "",
     web_url: tool.web_url ?? "",
+    app_store_url: tool.app_store_url ?? "",
+    play_store_url: tool.play_store_url ?? "",
     embed_allowed: tool.embed_allowed ?? 0,
     embed_url: tool.embed_url ?? "",
     runtime_supported: tool.runtime_supported ?? 0,
@@ -501,9 +517,10 @@ export async function createTool(tool: ToolWriteInput) {
   return execute(
     `INSERT INTO tools (
       name, slug, description, short_description, category, icon, tool_kind, delivery_mode, download_url, web_url,
+      app_store_url, play_store_url,
       embed_allowed, embed_url, runtime_supported, runtime_entrypoint, sandbox_level, trusted_domains, vendor,
       privacy_summary, data_handling, review_notes, last_reviewed_at, github_url, platform
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       t.name,
       t.slug,
@@ -515,6 +532,8 @@ export async function createTool(tool: ToolWriteInput) {
       t.delivery_mode,
       t.download_url,
       t.web_url,
+      t.app_store_url,
+      t.play_store_url,
       t.embed_allowed,
       t.embed_url,
       t.runtime_supported,
@@ -545,6 +564,8 @@ export async function updateTool(slug: string, tool: ToolWriteInput) {
       delivery_mode = ?,
       download_url = ?,
       web_url = ?,
+      app_store_url = ?,
+      play_store_url = ?,
       embed_allowed = ?,
       embed_url = ?,
       runtime_supported = ?,
@@ -570,6 +591,8 @@ export async function updateTool(slug: string, tool: ToolWriteInput) {
       t.delivery_mode,
       t.download_url,
       t.web_url,
+      t.app_store_url,
+      t.play_store_url,
       t.embed_allowed,
       t.embed_url,
       t.runtime_supported,

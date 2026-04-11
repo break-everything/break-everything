@@ -68,8 +68,25 @@ export async function PUT(
 
   const downloadUrl = String(body.download_url ?? "").trim();
   const webUrl = String(body.web_url ?? "").trim();
+  const appStoreUrl = String(body.app_store_url ?? "").trim();
+  const playStoreUrl = String(body.play_store_url ?? "").trim();
   const embedUrl = String(body.embed_url ?? "").trim();
   const runtimeEntrypoint = String(body.runtime_entrypoint ?? "").trim();
+
+  if (appStoreUrl && !isAllowedHttpUrl(appStoreUrl)) {
+    return NextResponse.json(
+      { error: "app_store_url must be a valid http(s) URL" },
+      { status: 400 }
+    );
+  }
+  if (playStoreUrl && !isAllowedHttpUrl(playStoreUrl)) {
+    return NextResponse.json(
+      { error: "play_store_url must be a valid http(s) URL" },
+      { status: 400 }
+    );
+  }
+
+  const hasAnyStore = isAllowedHttpUrl(appStoreUrl) || isAllowedHttpUrl(playStoreUrl);
   const trustedResult = normalizeTrustedDomainsInput(body.trusted_domains);
   if (!trustedResult.ok) {
     return NextResponse.json({ error: trustedResult.error }, { status: 400 });
@@ -112,9 +129,12 @@ export async function PUT(
     dataHandling = parsed;
   }
 
-  if (toolKind === "download" && !isAllowedHttpUrl(downloadUrl)) {
+  if (toolKind === "download" && !isAllowedHttpUrl(downloadUrl) && !hasAnyStore) {
     return NextResponse.json(
-      { error: "download_url must be a valid http(s) URL for download tools" },
+      {
+        error:
+          "For release/install tools: set download_url and/or at least one of app_store_url, play_store_url",
+      },
       { status: 400 }
     );
   }
@@ -124,9 +144,12 @@ export async function PUT(
       { status: 400 }
     );
   }
-  if (deliveryMode === "redirect" && !isAllowedHttpUrl(webUrl || downloadUrl)) {
+  if (deliveryMode === "redirect" && !isAllowedHttpUrl(webUrl || downloadUrl) && !hasAnyStore) {
     return NextResponse.json(
-      { error: "redirect tools require a valid web_url or download_url" },
+      {
+        error:
+          "redirect tools require a valid web_url, download_url, or App Store / Play link",
+      },
       { status: 400 }
     );
   }
@@ -169,6 +192,8 @@ export async function PUT(
       delivery_mode: deliveryMode,
       download_url: downloadUrl,
       web_url: webUrl,
+      app_store_url: appStoreUrl,
+      play_store_url: playStoreUrl,
       embed_allowed: Boolean(body.embed_allowed) ? 1 : 0,
       embed_url: embedUrl,
       runtime_supported: Boolean(body.runtime_supported) ? 1 : 0,

@@ -36,6 +36,8 @@ function buildInitialForm(tool?: Tool | null) {
       last_reviewed_at: tool.last_reviewed_at || "",
       github_url: tool.github_url,
       platform: tool.platform,
+      app_store_url: tool.app_store_url || "",
+      play_store_url: tool.play_store_url || "",
     };
   }
   return {
@@ -62,6 +64,8 @@ function buildInitialForm(tool?: Tool | null) {
     last_reviewed_at: "",
     github_url: "",
     platform: "windows",
+    app_store_url: "",
+    play_store_url: "",
   };
 }
 
@@ -129,6 +133,10 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
     "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-card-border text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/30 transition-colors";
 
   const labelClass = "block text-sm font-medium text-foreground/70 mb-1.5";
+
+  const hasStoreDraft =
+    String(form.app_store_url ?? "").trim().length > 0 ||
+    String(form.play_store_url ?? "").trim().length > 0;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -230,7 +238,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
             name="category"
             value={form.category}
             onChange={handleChange}
-            placeholder="pdf, converter, utility..."
+            placeholder="pdf, converter, mobile, utility…"
             className={inputClass}
             required
           />
@@ -254,6 +262,9 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
             className={inputClass}
           >
             <option value="web">Web browser</option>
+            <option value="ios">iOS (App Store)</option>
+            <option value="android">Android (Google Play)</option>
+            <option value="ios,android">iOS & Android</option>
             <option value="windows">Windows</option>
             <option value="mac">Mac</option>
             <option value="windows,mac">Windows & Mac</option>
@@ -270,9 +281,9 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
               name="download_url"
               value={form.download_url}
               onChange={handleChange}
-              placeholder="https://… direct or release link"
+              placeholder="https://… direct or release link (optional if store links below)"
               className={inputClass}
-              required
+              required={!hasStoreDraft}
             />
           </div>
         ) : (
@@ -300,6 +311,38 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
             className={inputClass}
             required
           />
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-card-border bg-white/[0.02] p-4 space-y-4">
+        <p className="text-sm font-medium text-foreground/80">App Store &amp; Google Play</p>
+        <p className="text-xs text-foreground/45 -mt-2">
+          Optional. Use category <span className="font-mono text-foreground/55">mobile</span> to group
+          listings. Visitors pick Apple or Android when both links exist; each opens the store off-site.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label className={labelClass}>Apple App Store URL</label>
+            <input
+              type="url"
+              name="app_store_url"
+              value={form.app_store_url}
+              onChange={handleChange}
+              placeholder="https://apps.apple.com/…"
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Google Play URL</label>
+            <input
+              type="url"
+              name="play_store_url"
+              value={form.play_store_url}
+              onChange={handleChange}
+              placeholder="https://play.google.com/…"
+              className={inputClass}
+            />
+          </div>
         </div>
       </div>
 

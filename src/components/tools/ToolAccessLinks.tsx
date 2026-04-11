@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { Tool } from "@/types";
 import { trackToolActionClick } from "@/analytics";
-import { resolvePrimaryAction } from "./delivery";
+import { resolveMobileStoreLinks, resolvePrimaryAction } from "./delivery";
 
 /** Keeps card / parent handlers from seeing the gesture (important on mobile WebKit). */
 function isolateActionInteraction(e: { stopPropagation: () => void }) {
@@ -47,6 +47,8 @@ interface ToolAccessLinksProps {
 }
 
 export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps) {
+  const stores = resolveMobileStoreLinks(tool);
+  const hasStores = Boolean(stores.apple || stores.play);
   const primaryAction = resolvePrimaryAction(tool);
   const primaryHref = primaryAction.href;
   const primaryLabel = primaryAction.label;
@@ -65,8 +67,73 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
   const githubClass = isHero
     ? "inline-flex items-center gap-2 px-6 py-3 rounded-none font-medium text-sm glass-card text-foreground/70 hover:text-foreground border-2 border-card-border"
     : "inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-none text-xs font-medium glass-card text-foreground/70 hover:text-foreground border-2 border-card-border";
+  const storeClass = isHero
+    ? "inline-flex items-center gap-2 px-5 py-3 rounded-none font-semibold text-sm border-2 border-emerald-500/35 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20 transition-colors"
+    : "inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-none text-xs font-semibold font-mono uppercase tracking-wide border-2 border-emerald-500/30 bg-emerald-500/10 text-emerald-200/95 hover:bg-emerald-500/15 transition-colors";
 
-  if (!primaryHref || primaryAction.type === "none") {
+  const projectLink = (
+    <a
+      href={tool.github_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={githubClass}
+      onClick={(e) => {
+        isolateActionInteraction(e);
+        void track("source");
+      }}
+      onPointerDownCapture={isolateActionInteraction}
+    >
+      {githubIcon}
+      {isHero ? "Project page" : "Project"}
+    </a>
+  );
+
+  const storeButtons = hasStores ? (
+    <>
+      {stores.apple ? (
+        <a
+          href={stores.apple}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={storeClass}
+          onClick={(e) => {
+            isolateActionInteraction(e);
+            void track("app_store");
+          }}
+          onPointerDownCapture={isolateActionInteraction}
+        >
+          App Store
+        </a>
+      ) : null}
+      {stores.play ? (
+        <a
+          href={stores.play}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={storeClass}
+          onClick={(e) => {
+            isolateActionInteraction(e);
+            void track("play_store");
+          }}
+          onPointerDownCapture={isolateActionInteraction}
+        >
+          Google Play
+        </a>
+      ) : null}
+    </>
+  ) : null;
+
+  const noPrimary = !primaryHref || primaryAction.type === "none";
+
+  if (noPrimary) {
+    if (hasStores) {
+      return (
+        <div className={`flex flex-wrap items-center gap-2 ${isHero ? "gap-3" : ""}`}>
+          {storeButtons}
+          {projectLink}
+        </div>
+      );
+    }
     return (
       <a
         href={tool.github_url}
@@ -90,49 +157,39 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
     </>
   );
 
+  const primaryEl = primaryIsInternal ? (
+    <Link
+      href={primaryHref}
+      className={primaryClass}
+      onClick={(e) => {
+        isolateActionInteraction(e);
+        void track(primaryAction.type);
+      }}
+      onPointerDownCapture={isolateActionInteraction}
+    >
+      {primaryContent}
+    </Link>
+  ) : (
+    <a
+      href={primaryHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={primaryClass}
+      onClick={(e) => {
+        isolateActionInteraction(e);
+        void track(primaryAction.type);
+      }}
+      onPointerDownCapture={isolateActionInteraction}
+    >
+      {primaryContent}
+    </a>
+  );
+
   return (
     <div className={`flex flex-wrap items-center gap-2 ${isHero ? "gap-3" : ""}`}>
-      {primaryIsInternal ? (
-        <Link
-          href={primaryHref}
-          className={primaryClass}
-          onClick={(e) => {
-            isolateActionInteraction(e);
-            void track(primaryAction.type);
-          }}
-          onPointerDownCapture={isolateActionInteraction}
-        >
-          {primaryContent}
-        </Link>
-      ) : (
-        <a
-          href={primaryHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={primaryClass}
-          onClick={(e) => {
-            isolateActionInteraction(e);
-            void track(primaryAction.type);
-          }}
-          onPointerDownCapture={isolateActionInteraction}
-        >
-          {primaryContent}
-        </a>
-      )}
-      <a
-        href={tool.github_url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={githubClass}
-        onClick={(e) => {
-          isolateActionInteraction(e);
-          void track("source");
-        }}
-        onPointerDownCapture={isolateActionInteraction}
-      >
-        {githubIcon}
-        {isHero ? "Project page" : "Project"}
-      </a>
+      {storeButtons}
+      {primaryEl}
+      {projectLink}
     </div>
   );
 }

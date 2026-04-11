@@ -1,8 +1,18 @@
 import Link from "next/link";
 import type { Tool, ToolKind } from "@/types";
 import ToolAccessLinks from "./ToolAccessLinks";
+import { resolveMobileStoreLinks } from "./delivery";
 
-function kindBadge(k: ToolKind) {
+function kindBadge(tool: Tool) {
+  const stores = resolveMobileStoreLinks(tool);
+  if (stores.apple || stores.play) {
+    return (
+      <span className="geo-badge px-2 py-0.5 text-[10px] font-medium bg-emerald-500/15 text-emerald-300 border-2 border-emerald-500/30 uppercase tracking-wider font-mono">
+        Mobile
+      </span>
+    );
+  }
+  const k: ToolKind = tool.tool_kind === "web" ? "web" : "download";
   if (k === "web") {
     return (
       <span className="geo-badge px-2 py-0.5 text-[10px] font-medium bg-sky-500/15 text-sky-300 border-2 border-sky-500/30 uppercase tracking-wider font-mono">
@@ -19,13 +29,12 @@ function kindBadge(k: ToolKind) {
 
 export default function ToolCard({ tool }: { tool: Tool }) {
   const platformBadges = tool.platform.split(",").map((p) => p.trim());
-  const k: ToolKind = tool.tool_kind === "web" ? "web" : "download";
 
   return (
     <div className="glass-card p-6 h-full flex flex-col group hover:border-accent-amber/20 transition-colors">
       <div className="flex items-start justify-between mb-4">
         <span className="text-3xl">{tool.icon}</span>
-        <div className="shrink-0">{kindBadge(k)}</div>
+        <div className="shrink-0">{kindBadge(tool)}</div>
       </div>
 
       <Link
