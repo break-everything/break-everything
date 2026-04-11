@@ -43,6 +43,7 @@ export default async function HomePage() {
 
           <p className="text-lg md:text-xl text-foreground/50 max-w-2xl mx-auto mb-10 leading-relaxed">
             Free tools for broke college students — PDF helpers, converters, and everyday utilities.
+            We try each pick, explain what it does, and point you to the people behind it.
           </p>
 
           <div className="flex flex-col items-center gap-4 mb-16">
