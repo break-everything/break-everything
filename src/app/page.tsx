@@ -42,7 +42,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="text-lg md:text-xl text-foreground/50 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Free tools for broke college students — PDF helpers, converters, and everyday utilities.
+            Free tools for broke college students — PDF helpers, file converters, and everyday utilities.
             We try each pick, explain what it does, and point you to the people behind it.
           </p>
 
