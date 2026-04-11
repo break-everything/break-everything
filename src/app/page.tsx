@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import ToolCard from "@/components/tools/ToolCard";
 import {
@@ -37,19 +36,11 @@ export default async function HomePage() {
             </span>
           </div>
 
-          <div className="mx-auto max-w-4xl mb-10 border border-card-border/50 bg-card-bg/30 overflow-hidden rounded-none">
-            <Image
-              src="/og-hero.png"
-              alt="Break Everything — free tools for broke college students: PDF helpers, file converters, and everyday utilities. We try each pick, explain what it does, and point you to the people behind it."
-              width={1024}
-              height={576}
-              className="w-full h-auto block"
-              priority
-              sizes="(max-width: 896px) 100vw, 896px"
-            />
-          </div>
-          <h1 className="sr-only">Break Everything</h1>
-          <p className="sr-only">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 md:mb-8">
+            <span className="gradient-text">Break</span>{" "}
+            <span className="text-foreground">Everything</span>
+          </h1>
+          <p className="mx-auto max-w-2xl text-base md:text-lg text-foreground/60 leading-relaxed mb-10 md:mb-12">
             Free tools for broke college students — PDF helpers, file converters, and everyday utilities.
             We try each pick, explain what it does, and point you to the people behind it.
           </p>

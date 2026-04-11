@@ -65,13 +65,13 @@ export default function Header() {
           className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0 group"
           onClick={closeMenu}
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-none border border-card-border bg-background">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden">
             <Image
-              src="/logo-mark.png"
+              src="/icon.png"
               alt=""
               width={36}
               height={36}
-              className="h-9 w-9 object-contain object-left"
+              className="h-9 w-9 object-contain object-center"
               priority
             />
           </span>
