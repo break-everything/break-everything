@@ -9,11 +9,11 @@ export const DEFAULT_DESCRIPTION =
 
 export const DEFAULT_TITLE = `${SITE_NAME} — ${SITE_TAGLINE}`;
 
-/** Square brand lockup; dimensions match `public/logo-lockup.png`. */
+/** 16:9 hero banner for link previews; dimensions match `public/og-hero.png`. */
 export const DEFAULT_OG_IMAGE = {
-  url: "/logo-lockup.png",
+  url: "/og-hero.png",
   width: 1024,
-  height: 1024,
-  alt: `${SITE_NAME} — BE wordmark`,
+  height: 576,
+  alt: `${SITE_NAME} — free, open-source tools for students`,
   type: "image/png",
 } as const;
