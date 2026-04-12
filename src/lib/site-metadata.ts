@@ -17,3 +17,6 @@ export const DEFAULT_OG_IMAGE = {
   alt: `${SITE_NAME} — free tools for students`,
   type: "image/png",
 } as const;
+
+/** `google-adsense-account` meta value — use only on home and tool detail routes. */
+export const GOOGLE_ADSENSE_ACCOUNT = "ca-pub-2587197324811876";

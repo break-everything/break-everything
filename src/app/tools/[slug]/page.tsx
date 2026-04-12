@@ -5,6 +5,7 @@ import ToolAccessLinks from "@/components/tools/ToolAccessLinks";
 import TrustPanel from "@/components/tools/TrustPanel";
 import {
   DEFAULT_OG_IMAGE,
+  GOOGLE_ADSENSE_ACCOUNT,
   SITE_NAME,
 } from "@/lib/site-metadata";
 import { getToolBySlug } from "@/server/db";
@@ -64,6 +65,9 @@ export async function generateMetadata({
           height: DEFAULT_OG_IMAGE.height,
         },
       ],
+    },
+    other: {
+      "google-adsense-account": GOOGLE_ADSENSE_ACCOUNT,
     },
   };
 }
