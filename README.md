@@ -71,4 +71,4 @@ See [`CHANGELOG.md`](./CHANGELOG.md) for notable project changes.
 
 ## License
 
-No license file is currently present. Add a `LICENSE` file before public distribution.
+This project is licensed under the [MIT License](./LICENSE).
