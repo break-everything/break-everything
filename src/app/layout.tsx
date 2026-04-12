@@ -10,7 +10,7 @@ import {
   DEFAULT_OG_IMAGE,
   DEFAULT_TITLE,
   SITE_NAME,
-} from "@/lib/site-metadata";
+} from "@/config";
 import "./globals.css";
 
 const geistSans = Geist({

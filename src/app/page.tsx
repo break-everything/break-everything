@@ -7,7 +7,7 @@ import {
   getSourceLinkedToolStats,
   getToolCount,
 } from "@/server/db";
-import { GOOGLE_ADSENSE_ACCOUNT } from "@/lib/site-metadata";
+import { GOOGLE_ADSENSE_ACCOUNT } from "@/config";
 import type { Tool } from "@/types";
 
 export const metadata: Metadata = {

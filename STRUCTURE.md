@@ -6,45 +6,51 @@ This project follows Next.js App Router conventions and keeps server-only module
 
 ```text
 src/
-|-- app/                    # Next.js routes, layouts, pages, API handlers
-|   |-- admin/              # Admin dashboard (tools, requests, analytics tab)
-|   |-- api/                # HTTP route handlers
-|   |   |-- __tests__/      # API integration tests (co-located)
-|   |   |-- analytics/      # Admin analytics summary (GET /api/analytics)
-|   |   |-- auth/           # Session endpoints
-|   |   |-- events/         # Public analytics ingest (POST /api/events)
-|   |   |-- requests/       # Tool request endpoints
-|   |   `-- tools/          # Tool CRUD endpoints
-|   |-- tools/              # Public tool listing, detail, embed/run routes
-|   |-- globals.css
-|   `-- layout.tsx
-|-- analytics/              # Client-only analytics helpers (browser fetch to /api/events)
+|-- analytics/              # Client-only helpers (browser → /api/events)
 |   |-- client.ts
 |   `-- index.ts
+|-- app/                    # Routes, layouts, pages, API handlers
+|   |-- admin/              # Admin dashboard (+ layout metadata)
+|   |-- api/
+|   |   |-- __tests__/      # API integration tests
+|   |   |-- analytics/      # GET /api/analytics
+|   |   |-- auth/
+|   |   |-- events/         # POST /api/events (analytics ingest)
+|   |   |-- requests/
+|   |   `-- tools/
+|   |-- tools/              # Browse, [slug] detail, embed, run
+|   |-- globals.css
+|   |-- icon.png / apple-icon.png / favicon.ico
+|   `-- layout.tsx
 |-- components/
-|   |-- admin/              # Admin-only UI (e.g. analytics dashboard panel)
+|   |-- admin/              # AdminAnalyticsPanel
 |   |-- forms/
 |   |-- layout/
-|   |-- tools/
-|   `-- index.ts
-|-- types/                  # Shared TypeScript types
-|   |-- analytics.ts        # AnalyticsSummary (API + admin UI)
-|   |-- tool.ts
-|   |-- tool-request.ts
+|   |-- tools/              # Cards, trust, delivery, share, mobile store
+|   `-- index.ts            # Namespaced barrels (Admin, Forms, Layout, Tools)
+|-- config/                 # App-wide constants (SEO, site name, AdSense id)
+|   |-- site-metadata.ts
 |   `-- index.ts
 |-- server/
-|   |-- analytics-ingest.ts # Rules for POST /api/events (allowed events, action format)
+|   |-- analytics-ingest.ts
 |   |-- api-response.ts
 |   |-- auth.ts
-|   |-- db.ts               # DB access + recordAnalyticsEvent / getAnalyticsSummary
-|   |-- rate-limit.ts       # Includes analyticsIngest bucket
+|   |-- db.ts
+|   |-- parse-json-body.ts
+|   |-- rate-limit.ts
+|   |-- tool-public.ts      # Public tool field shaping
 |   |-- validation.ts
 |   |-- __tests__/
 |   `-- index.ts
-`-- test-env.ts             # Jest setup
+|-- types/
+|   |-- analytics.ts
+|   |-- tool.ts
+|   |-- tool-request.ts
+|   `-- index.ts
+`-- test-env.ts             # Jest setup (see jest.config.ts)
 
 public/
-data/                       # SQLite / local DB files
+data/
 ```
 
 ## Analytics (where things live)
@@ -54,17 +60,18 @@ data/                       # SQLite / local DB files
 | Ingest HTTP API | `src/app/api/events/route.ts` |
 | Admin summary HTTP API | `src/app/api/analytics/route.ts` |
 | Event name / action validation (server) | `src/server/analytics-ingest.ts` |
-| Persist + aggregate queries | `src/server/db.ts` (`recordAnalyticsEvent`, `getAnalyticsSummary`) |
+| Persist + aggregate queries | `src/server/db.ts` |
 | Shared summary type | `src/types/analytics.ts` |
-| Browser tracking helper | `src/analytics/client.ts` (import via `@/analytics`) |
-| Admin charts / filters UI | `src/components/admin/AdminAnalyticsPanel.tsx` |
+| Browser tracking helper | `src/analytics/client.ts` (`@/analytics`) |
+| Admin UI | `src/components/admin/AdminAnalyticsPanel.tsx` |
 
 ## Conventions
 
 - Keep Next.js routing logic in `src/app` only.
-- Keep reusable UI in `src/components`, organized by role (`layout`, `forms`, `tools`, `admin`).
-- Keep shared domain types in `src/types` (not duplicated in UI files).
-- Keep all server-only logic in `src/server`; do not import it into Client Components.
-- Keep client analytics calls in `src/analytics` (not a generic `lib` grab-bag).
-- Co-locate tests under the nearest module `__tests__` directory.
-- Use `@/` absolute imports and avoid deep relative paths.
+- Keep reusable UI in `src/components`, grouped by role (`layout`, `forms`, `tools`, `admin`).
+- Keep app-wide constants and SEO defaults in `src/config` (not a catch-all `lib`).
+- Keep shared TypeScript types in `src/types`.
+- Keep server-only logic in `src/server`; do not import it into Client Components.
+- Keep client analytics calls in `src/analytics`.
+- Co-locate tests in `__tests__` next to the module they exercise.
+- Prefer `@/` imports (e.g. `@/config`, `@/types`, `@/server/db`).

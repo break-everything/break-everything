@@ -38,6 +38,7 @@ Key areas:
 
 - `src/app` - routes, layouts, pages, API route handlers
 - `src/components` - reusable UI components
+- `src/config` - site-wide constants (SEO, branding, AdSense meta value)
 - `src/analytics` - client-side analytics helpers (calls `/api/events`)
 - `src/types` - shared domain TypeScript types
 - `src/server` - server-only modules (database, auth, rate limiting, validation)

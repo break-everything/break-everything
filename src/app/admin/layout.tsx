@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_NAME } from "@/lib/site-metadata";
+import { SITE_NAME } from "@/config";
 
 export const metadata: Metadata = {
   title: "Admin",

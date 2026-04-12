@@ -3,7 +3,7 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
   SITE_NAME,
-} from "@/lib/site-metadata";
+} from "@/config";
 
 const title = "Browse tools";
 

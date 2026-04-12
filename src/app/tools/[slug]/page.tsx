@@ -7,7 +7,7 @@ import {
   DEFAULT_OG_IMAGE,
   GOOGLE_ADSENSE_ACCOUNT,
   SITE_NAME,
-} from "@/lib/site-metadata";
+} from "@/config";
 import { getToolBySlug } from "@/server/db";
 import type { Tool } from "@/types";
 

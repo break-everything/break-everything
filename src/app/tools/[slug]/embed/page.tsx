@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import {
   DEFAULT_OG_IMAGE,
   SITE_NAME,
-} from "@/lib/site-metadata";
+} from "@/config";
 import { getToolBySlug } from "@/server/db";
 import { isAllowedEmbedUrl, parseCsvDomains } from "@/server/validation";
 import type { Tool } from "@/types";
