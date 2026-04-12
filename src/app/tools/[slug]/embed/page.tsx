@@ -8,6 +8,23 @@ import { getToolBySlug } from "@/server/db";
 import { isAllowedEmbedUrl, parseCsvDomains } from "@/server/validation";
 import type { Tool } from "@/types";
 
+/**
+ * Maps admin-configured `sandbox_level` to iframe `sandbox` tokens.
+ * `trusted` keeps `allow-popups-to-escape-sandbox` for OAuth-style flows on vetted listings only (higher phishing risk).
+ */
+function iframeSandboxForLevel(level: Tool["sandbox_level"]): string {
+  const base = "allow-forms allow-modals allow-scripts";
+  switch (level) {
+    case "trusted":
+      return `${base} allow-popups allow-popups-to-escape-sandbox`;
+    case "standard":
+      return `${base} allow-popups`;
+    case "strict":
+    default:
+      return base;
+  }
+}
+
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
@@ -82,7 +99,7 @@ export default async function ToolEmbedPage({
             src={targetUrl}
             title={`${tool.name} — in-page view`}
             className="w-full min-h-[75vh] bg-black"
-            sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-scripts"
+            sandbox={iframeSandboxForLevel(tool.sandbox_level)}
             referrerPolicy="strict-origin-when-cross-origin"
           />
         </div>
