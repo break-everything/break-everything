@@ -24,7 +24,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-3 text-sm text-foreground/50 max-w-xs">
-              Free tools for students who&apos;d rather not pay for software. Every pick links to where it came from.
+              Break Everything exists to help students break software costs with free tools and clear links to who built them.
             </p>
           </div>
 

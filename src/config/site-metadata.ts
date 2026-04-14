@@ -2,10 +2,10 @@
 
 export const SITE_NAME = "Break Everything";
 
-export const SITE_TAGLINE = "Free Tools for Students";
+export const SITE_TAGLINE = "Break software costs, not your budget";
 
 export const DEFAULT_DESCRIPTION =
-  "Hand-picked free tools for students — each one reviewed, with a clear link to learn more and see who made it.";
+  "Break Everything helps students break past expensive software by sharing free tools we review, explain in plain language, and link back to the people who build them.";
 
 export const DEFAULT_TITLE = `${SITE_NAME} — ${SITE_TAGLINE}`;
 
@@ -14,7 +14,7 @@ export const DEFAULT_OG_IMAGE = {
   url: "/og-hero.png",
   width: 1024,
   height: 576,
-  alt: `${SITE_NAME} — free tools for students`,
+  alt: `${SITE_NAME} — breaking software cost barriers for students`,
   type: "image/png",
 } as const;
 

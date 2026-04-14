@@ -74,7 +74,7 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
     : "inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-none text-xs font-semibold font-mono uppercase tracking-wide border-2 border-emerald-500/30 bg-emerald-500/10 text-emerald-200/95 hover:bg-emerald-500/15 transition-colors";
 
   const storeQrDescription =
-    "Scan with your phone’s camera to open the store on that device, or tap Open below to use this device’s browser.";
+    "Scan with your phone's camera to open the store on that device, or tap Open below to use this device's browser.";
 
   const shareLink = (
     <ToolShareLink tool={tool} className={githubClass} shortLabel={!isHero} />
@@ -93,7 +93,7 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
       onPointerDownCapture={isolateActionInteraction}
     >
       {githubIcon}
-      {isHero ? "Project page" : "Project"}
+      {isHero ? "Source page" : "Source"}
     </a>
   );
 
@@ -148,7 +148,7 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
           onPointerDownCapture={isolateActionInteraction}
         >
           {githubIcon}
-          {isHero ? "Project page" : "Project"}
+          {isHero ? "Source page" : "Source"}
         </a>
       </div>
     );

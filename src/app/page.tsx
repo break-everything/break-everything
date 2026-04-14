@@ -40,7 +40,7 @@ export default async function HomePage() {
               aria-hidden
             />
             <span className="text-xs font-semibold font-mono uppercase tracking-widest text-accent-lime/90">
-              Free · Student-built picks
+              Free tools to break software costs
             </span>
           </div>
 
@@ -49,8 +49,8 @@ export default async function HomePage() {
             <span className="text-foreground">Everything</span>
           </h1>
           <p className="mx-auto max-w-2xl text-base md:text-lg text-foreground/60 leading-relaxed mb-10 md:mb-12">
-            Free tools for broke college students — PDF helpers, file converters, and everyday utilities.
-            We try each pick, explain what it does, and point you to the people behind it.
+            Break Everything exists to help students break past expensive software costs with free tools that actually do the job.
+            We test each pick, explain what it does, and point you to the people behind it.
           </p>
 
           <div className="flex flex-col items-center gap-4 mb-16">
@@ -115,7 +115,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground mb-2">Checked before we list</h3>
             <p className="text-sm text-foreground/50">
-              We read the basics, try the tool when we can, and link to where it comes from so you can decide if it fits your work.
+              We read the basics, try the tool when we can, and link to where it comes from so you can break software costs without blind trust.
             </p>
           </div>
 
@@ -127,7 +127,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground mb-2">See who made it</h3>
             <p className="text-sm text-foreground/50">
-              Every tool links to its public project page so you can read more, ask questions, or get involved if you want to.
+              Every tool links to its public project page so Break Everything stays about real builders, not mystery listings.
             </p>
           </div>
 
@@ -139,7 +139,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground mb-2">Always Free</h3>
             <p className="text-sm text-foreground/50">
-              No trials, no freemium, no subscriptions. Built by students who know what it&apos;s like to be broke.
+              No trials, no freemium, no subscriptions. Breaking software costs only works if the tools are truly free.
             </p>
           </div>
         </div>
