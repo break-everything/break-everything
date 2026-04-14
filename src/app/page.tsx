@@ -115,7 +115,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground mb-2">Checked before we list</h3>
             <p className="text-sm text-foreground/50">
-              We read the basics, try the tool when we can, and link to where it comes from so you can break software costs without blind trust.
+              We read the basics, try the tool when we can, and link to where it comes from so you can decide if it fits your work.
             </p>
           </div>
 
@@ -127,7 +127,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground mb-2">See who made it</h3>
             <p className="text-sm text-foreground/50">
-              Every tool links to its public project page so Break Everything stays about real builders, not mystery listings.
+              Every tool links to its public project page so you can read more, ask questions, or get involved if you want to.
             </p>
           </div>
 
@@ -139,7 +139,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground mb-2">Always Free</h3>
             <p className="text-sm text-foreground/50">
-              No trials, no freemium, no subscriptions. Breaking software costs only works if the tools are truly free.
+              No trials, no freemium, no subscriptions. Built by students who know what it's like to be broke.
             </p>
           </div>
         </div>
