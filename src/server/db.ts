@@ -495,15 +495,21 @@ async function seedTools(client: Client) {
 }
 
 export async function getAllTools() {
-  return queryAll("SELECT * FROM tools ORDER BY downloads DESC");
+  const rows = await queryAll<Record<string, unknown>>("SELECT * FROM tools ORDER BY downloads DESC");
+  return rows.map(normalizeToolRowCategories);
 }
 
 export async function getToolBySlug(slug: string) {
-  return queryOne("SELECT * FROM tools WHERE slug = ?", [slug]);
+  const row = await queryOne<Record<string, unknown>>("SELECT * FROM tools WHERE slug = ?", [slug]);
+  return row ? normalizeToolRowCategories(row) : undefined;
 }
 
 export async function getToolsByCategory(category: string) {
-  return queryAll("SELECT * FROM tools WHERE category = ? ORDER BY downloads DESC", [category]);
+  const rows = await queryAll<Record<string, unknown>>("SELECT * FROM tools ORDER BY downloads DESC");
+  const target = category.trim().toLowerCase();
+  return rows
+    .map(normalizeToolRowCategories)
+    .filter((row) => Array.isArray(row.categories) && row.categories.includes(target));
 }
 
 interface ToolWriteInput {
@@ -511,7 +517,7 @@ interface ToolWriteInput {
   slug?: string;
   description: string;
   short_description: string;
-  category: string;
+  categories: string[];
   icon: string;
   tool_kind: "download" | "web";
   delivery_mode: "redirect" | "embedded" | "browserRuntime" | "download";
@@ -535,8 +541,10 @@ interface ToolWriteInput {
 }
 
 function withToolDefaults(tool: ToolWriteInput): ToolWriteInput {
+  const normalizedCategories = normalizeCategories(tool.categories ?? []);
   return {
     ...tool,
+    categories: normalizedCategories,
     delivery_mode: tool.delivery_mode ?? "download",
     download_url: tool.download_url ?? "",
     web_url: tool.web_url ?? "",
@@ -561,17 +569,18 @@ export async function createTool(tool: ToolWriteInput) {
   const t = withToolDefaults(tool);
   return execute(
     `INSERT INTO tools (
-      name, slug, description, short_description, category, icon, tool_kind, delivery_mode, download_url, web_url,
+      name, slug, description, short_description, category, categories, icon, tool_kind, delivery_mode, download_url, web_url,
       app_store_url, play_store_url,
       embed_allowed, embed_url, runtime_supported, runtime_entrypoint, sandbox_level, trusted_domains, vendor,
       privacy_summary, data_handling, review_notes, last_reviewed_at, github_url, platform
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       t.name,
       t.slug,
       t.description,
       t.short_description,
-      t.category,
+      primaryCategoryFrom(t.categories),
+      JSON.stringify(t.categories),
       t.icon,
       t.tool_kind,
       t.delivery_mode,
@@ -604,6 +613,7 @@ export async function updateTool(slug: string, tool: ToolWriteInput) {
       description = ?,
       short_description = ?,
       category = ?,
+      categories = ?,
       icon = ?,
       tool_kind = ?,
       delivery_mode = ?,
@@ -630,7 +640,8 @@ export async function updateTool(slug: string, tool: ToolWriteInput) {
       t.name,
       t.description,
       t.short_description,
-      t.category,
+      primaryCategoryFrom(t.categories),
+      JSON.stringify(t.categories),
       t.icon,
       t.tool_kind,
       t.delivery_mode,
@@ -667,8 +678,13 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
 }
 
 export async function getCategories(): Promise<string[]> {
-  const rows = await queryAll<{ category: string }>("SELECT DISTINCT category FROM tools ORDER BY category");
-  return rows.map((r) => r.category);
+  const tools = await getAllTools();
+  const categories = tools.flatMap((tool) =>
+    Array.isArray((tool as { categories?: unknown }).categories)
+      ? ((tool as { categories: string[] }).categories ?? [])
+      : []
+  );
+  return [...new Set(categories)].sort();
 }
 
 export async function getToolCount(): Promise<number> {

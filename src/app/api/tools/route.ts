@@ -10,6 +10,7 @@ import {
   isAllowedEmbedUrl,
   isAllowedHttpUrl,
   isValidToolSlug,
+  normalizeCategoriesInput,
   normalizeTrustedDomainsInput,
   parseCsvDomains,
   parseDataHandling,
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.ok) return parsed.response;
   const body = parsed.body;
 
-  const required = ["name", "slug", "description", "short_description", "category"];
+  const required = ["name", "slug", "description", "short_description", "categories"];
   for (const field of required) {
     if (!body[field]) {
       return NextResponse.json(
@@ -87,6 +88,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: trustedResult.error }, { status: 400 });
   }
   const trustedDomains = trustedResult.csv;
+  const categoriesResult = normalizeCategoriesInput(body.categories);
+  if (!categoriesResult.ok) {
+    return NextResponse.json({ error: categoriesResult.error }, { status: 400 });
+  }
 
   let deliveryMode: "redirect" | "embedded" | "browserRuntime" | "download" = "download";
   if (body.delivery_mode != null && String(body.delivery_mode).trim() !== "") {
@@ -190,7 +195,7 @@ export async function POST(request: NextRequest) {
       slug: String(body.slug ?? ""),
       description: String(body.description ?? ""),
       short_description: String(body.short_description ?? ""),
-      category: String(body.category ?? ""),
+      categories: categoriesResult.categories,
       icon: String(body.icon ?? "").trim() || "🔧",
       tool_kind: toolKind,
       delivery_mode: deliveryMode,
