@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Code-split admin-only UI by lazy-loading `AdminAnalyticsPanel` and `AdminToolForm` in `src/app/admin/page.tsx`.
+- Removed empty stale directories (`src/components/ads`, `src/app/ads.txt`) and simplified route inventory.
 - Removed stale empty routes (src/app/request-a-tool, src/app/api/requests/[id]) and aligned docs with actual request flow (/request-tool).
 - Refreshed Markdown docs (`README`, `STRUCTURE`, `CONTRIBUTING`, agent pointers) to match current layout (`src/config`, analytics APIs, env vars, test scripts).
 

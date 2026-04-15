@@ -34,8 +34,9 @@ Open `http://localhost:3000`.
 
 ## Code Guidelines
 
-- Follow existing project structure in `src/app`, `src/components`, and `src/server`.
+- Follow existing project structure in `src/app`, `src/components`, `src/config`, `src/analytics`, `src/types`, and `src/server`.
 - Keep server-only logic in `src/server`.
+- Keep the public request flow in `src/app/request-tool` unless requirements explicitly move it to an API-backed queue.
 - Avoid breaking public API route behavior unless intentionally versioned/communicated.
 - Update docs when user-facing behavior changes.
 

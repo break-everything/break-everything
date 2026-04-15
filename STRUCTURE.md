@@ -17,7 +17,6 @@ src/
 |   |   |-- analytics/      # GET /api/analytics
 |   |   |-- auth/
 |   |   |-- events/         # POST /api/events (analytics ingest)
-|   |   -- tools/
 |   |   `-- tools/
 |   |-- tools/              # Browse, [slug] detail, embed, run
 |   |-- globals.css
@@ -27,7 +26,7 @@ src/
 |   |-- admin/              # AdminAnalyticsPanel
 |   |-- forms/
 |   |-- layout/
-|   |-- tools/              # Cards, trust, delivery, share, mobile store, embeds (e.g. Jira)
+|   |-- tools/              # Cards, trust, delivery, share, mobile store
 |   `-- index.ts            # Namespaced barrels (Admin, Forms, Layout, Tools)
 |-- config/                 # App-wide constants (SEO, site name, AdSense id)
 |   |-- site-metadata.ts

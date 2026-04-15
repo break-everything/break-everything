@@ -9,9 +9,9 @@ Break Everything helps users discover free tools (web-first listings with option
 - Browse all tools at `/tools`
 - View per-tool detail pages at `/tools/[slug]`
 - Inspect per-tool listing metadata (vendor, privacy, data handling, review date)
-- Submit tool requests from the public UI
-- Manage tools, requests, and analytics from `/admin` after authentication
-- Use built-in API routes for tools, auth, requests, events, and analytics
+- Submit tool requests from the public UI (`/request-tool`)
+- Manage tools and analytics from `/admin` after authentication
+- Use built-in API routes for tools, auth, events, and analytics
 
 ## Tech Stack
 
@@ -57,10 +57,6 @@ Key areas:
 - `GET /api/auth` - auth status
 - `POST /api/auth` - login
 - `DELETE /api/auth` - logout
-- `POST /api/requests` - submit tool request (public)
-- `GET /api/requests` - list requests (admin)
-- `PATCH /api/requests/[id]` - update request status (admin)
-- `DELETE /api/requests/[id]` - delete request (admin)
 - `POST /api/events` - record analytics events (public, rate-limited)
 - `GET /api/analytics` - analytics aggregates for admin UI (admin session)
 

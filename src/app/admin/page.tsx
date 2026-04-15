@@ -1,9 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useEffect, useRef } from "react";
-import { AdminAnalyticsPanel } from "@/components/admin";
-import AdminToolForm from "@/components/forms/AdminToolForm";
 import type { Tool } from "@/types";
+
+const AdminAnalyticsPanel = dynamic(
+  () => import("@/components/admin").then((m) => m.AdminAnalyticsPanel)
+);
+const AdminToolForm = dynamic(
+  () => import("@/components/forms").then((m) => m.AdminToolForm)
+);
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
