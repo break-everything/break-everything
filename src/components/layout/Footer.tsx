@@ -58,7 +58,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li className="text-sm text-foreground/50 flex items-center gap-2.5">
                 <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-amber/80 border border-accent-steel/40" />
-                Free tools with a public project page
+                Free tools that prefer a public project page
               </li>
               <li className="text-sm text-foreground/50 flex items-center gap-2.5">
                 <span className="w-2 h-2 shrink-0 rotate-45 bg-accent-steel/70 border border-accent-lime/35" />

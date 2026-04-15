@@ -133,6 +133,36 @@ async function queryAll<T>(sql: string, args: InArgs = []): Promise<T[]> {
   return result.rows.map((row) => toPlainObject<T>(row));
 }
 
+function normalizeCategories(categories: string[]): string[] {
+  return [...new Set(categories.map((c) => c.trim().toLowerCase()).filter(Boolean))];
+}
+
+function parseCategoriesValue(value: unknown): string[] {
+  if (typeof value !== "string" || !value.trim()) return [];
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return normalizeCategories(parsed.filter((c): c is string => typeof c === "string"));
+  } catch {
+    return [];
+  }
+}
+
+function primaryCategoryFrom(categories: string[]): string {
+  return categories[0] ?? "";
+}
+
+function normalizeToolRowCategories<T extends Record<string, unknown>>(row: T): T {
+  const categories = parseCategoriesValue(row.categories);
+  const fallbackCategory = typeof row.category === "string" ? row.category.trim().toLowerCase() : "";
+  const resolved = categories.length > 0 ? categories : fallbackCategory ? [fallbackCategory] : [];
+  return {
+    ...row,
+    categories: resolved,
+    category: primaryCategoryFrom(resolved),
+  };
+}
+
 async function migrateToolsColumns(client: Client) {
   const info = await client.execute("PRAGMA table_info(tools)");
   const colNames = new Set(
@@ -196,6 +226,9 @@ async function migrateToolsColumns(client: Client) {
   if (!colNames.has("play_store_url")) {
     await client.execute("ALTER TABLE tools ADD COLUMN play_store_url TEXT NOT NULL DEFAULT ''");
   }
+  if (!colNames.has("categories")) {
+    await client.execute("ALTER TABLE tools ADD COLUMN categories TEXT NOT NULL DEFAULT '[]'");
+  }
 }
 
 /** Legacy columns removed from the product; drop on existing databases (SQLite 3.35+). */
@@ -222,6 +255,25 @@ async function migrateRemoveLegacyVerificationColumns(client: Client) {
   }
 }
 
+async function migrateToolCategoriesData(client: Client) {
+  const rows = await client.execute(`
+    SELECT id, category, categories
+    FROM tools
+    WHERE TRIM(COALESCE(categories, '')) = '' OR TRIM(COALESCE(categories, '')) = '[]'
+  `);
+
+  for (const row of rows.rows) {
+    const id = Number((row as { id?: number | string }).id ?? 0);
+    if (!id) continue;
+    const legacyCategory = String((row as { category?: string }).category ?? "");
+    const normalized = normalizeCategories([legacyCategory]);
+    await client.execute({
+      sql: "UPDATE tools SET categories = ?, category = ? WHERE id = ?",
+      args: [JSON.stringify(normalized), primaryCategoryFrom(normalized), id],
+    });
+  }
+}
+
 async function initSchema(client: Client) {
   const schemaStatements: InStatement[] = [
     {
@@ -232,6 +284,7 @@ async function initSchema(client: Client) {
         description TEXT NOT NULL,
         short_description TEXT NOT NULL,
         category TEXT NOT NULL,
+        categories TEXT NOT NULL DEFAULT '[]',
         icon TEXT DEFAULT '🔧',
         tool_kind TEXT NOT NULL DEFAULT 'download' CHECK (tool_kind IN ('download', 'web')),
         delivery_mode TEXT NOT NULL DEFAULT 'download' CHECK (delivery_mode IN ('redirect', 'embedded', 'browserRuntime', 'download')),
@@ -250,7 +303,7 @@ async function initSchema(client: Client) {
         data_handling TEXT NOT NULL DEFAULT 'medium' CHECK (data_handling IN ('low', 'medium', 'high')),
         review_notes TEXT NOT NULL DEFAULT '',
         last_reviewed_at TEXT,
-        github_url TEXT NOT NULL,
+        github_url TEXT NOT NULL DEFAULT '',
         platform TEXT NOT NULL DEFAULT 'windows',
         downloads INTEGER DEFAULT 0,
         created_at TEXT DEFAULT (datetime('now')),
@@ -282,6 +335,7 @@ async function initSchema(client: Client) {
 
   await client.batch(schemaStatements, "write");
   await migrateToolsColumns(client);
+  await migrateToolCategoriesData(client);
   await migrateRemoveLegacyVerificationColumns(client);
 
   if (!ADMIN_PASSWORD) {
@@ -325,7 +379,7 @@ async function seedTools(client: Client) {
       description:
         "A lightweight PDF editor that lets you merge, split, rotate, and annotate PDF files. No watermarks, no subscriptions, no nonsense. Built with students in mind who need to handle PDF assignments without paying for Adobe.",
       short_description: "Free PDF editor — merge, split, rotate & annotate with zero watermarks.",
-      category: "pdf",
+      categories: ["pdf"],
       icon: "📄",
       delivery_mode: "download",
       download_url: "https://github.com/example/pdf-forge/releases/latest",
@@ -351,7 +405,7 @@ async function seedTools(client: Client) {
       description:
         "Universal file converter supporting 50+ formats. Convert images, documents, audio, and video files locally on your machine — no uploads, no privacy concerns. Supports batch conversion for handling entire folders at once.",
       short_description: "Convert 50+ file formats locally. Images, docs, audio & video — all offline.",
-      category: "converter",
+      categories: ["converter"],
       icon: "🔄",
       delivery_mode: "download",
       download_url: "https://github.com/example/convertx/releases/latest",
@@ -377,7 +431,7 @@ async function seedTools(client: Client) {
       description:
         "A smart clipboard manager that remembers your copy history. Search through past clips, pin frequently used text, and sync snippets across sessions. Handy for research papers and long assignments when you juggle dozens of references.",
       short_description: "Smart clipboard manager — search history, pin clips & never lose a copy.",
-      category: "utility",
+      categories: ["utility"],
       icon: "📋",
       delivery_mode: "download",
       download_url: "https://github.com/example/clipvault/releases/latest",
@@ -401,17 +455,18 @@ async function seedTools(client: Client) {
 
   const statements: InStatement[] = seeds.map((tool) => ({
     sql: `INSERT OR IGNORE INTO tools (
-      name, slug, description, short_description, category, icon, tool_kind, delivery_mode, download_url, web_url,
+      name, slug, description, short_description, category, categories, icon, tool_kind, delivery_mode, download_url, web_url,
       app_store_url, play_store_url,
       embed_allowed, embed_url, runtime_supported, runtime_entrypoint, sandbox_level, trusted_domains, vendor,
       privacy_summary, data_handling, review_notes, last_reviewed_at, github_url, platform, downloads
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       tool.name,
       tool.slug,
       tool.description,
       tool.short_description,
-      tool.category,
+      primaryCategoryFrom(tool.categories),
+      JSON.stringify(tool.categories),
       tool.icon,
       "download",
       tool.delivery_mode,
@@ -475,7 +530,7 @@ interface ToolWriteInput {
   data_handling: "low" | "medium" | "high";
   review_notes: string;
   last_reviewed_at: string | null;
-  github_url: string;
+  github_url?: string;
   platform: string;
 }
 
@@ -498,6 +553,7 @@ function withToolDefaults(tool: ToolWriteInput): ToolWriteInput {
     data_handling: tool.data_handling ?? "medium",
     review_notes: tool.review_notes ?? "",
     last_reviewed_at: tool.last_reviewed_at ?? null,
+    github_url: tool.github_url ?? "",
   };
 }
 

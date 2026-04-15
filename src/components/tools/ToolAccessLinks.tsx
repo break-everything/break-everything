@@ -49,6 +49,7 @@ interface ToolAccessLinksProps {
 }
 
 export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps) {
+  const githubUrl = String(tool.github_url ?? "").trim();
   const stores = resolveMobileStoreLinks(tool);
   const hasStores = Boolean(stores.apple || stores.play);
   const primaryAction = resolvePrimaryAction(tool);
@@ -80,9 +81,9 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
     <ToolShareLink tool={tool} className={githubClass} shortLabel={!isHero} />
   );
 
-  const projectLink = (
+  const projectLink = githubUrl ? (
     <a
-      href={tool.github_url}
+      href={githubUrl}
       target="_blank"
       rel="noopener noreferrer"
       className={githubClass}
@@ -95,7 +96,7 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
       {githubIcon}
       {isHero ? "Source page" : "Source"}
     </a>
-  );
+  ) : null;
 
   const storeBlocks = hasStores ? (
     <>
@@ -139,17 +140,7 @@ export default function ToolAccessLinks({ tool, variant }: ToolAccessLinksProps)
     return (
       <div className={`flex flex-wrap items-start gap-2 ${isHero ? "gap-4" : "gap-3"}`}>
         {shareLink}
-        <a
-          href={tool.github_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={githubClass}
-          onClick={isolateActionInteraction}
-          onPointerDownCapture={isolateActionInteraction}
-        >
-          {githubIcon}
-          {isHero ? "Source page" : "Source"}
-        </a>
+        {projectLink}
       </div>
     );
   }

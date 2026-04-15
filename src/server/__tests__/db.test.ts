@@ -143,6 +143,26 @@ describe("Tools CRUD", () => {
     expect(await getToolCount()).toBe(4);
   });
 
+  it("createTool defaults github_url to empty when omitted", async () => {
+    await createTool({
+      name: "NoSource",
+      slug: "no-source",
+      description: "A test tool without source link",
+      short_description: "No source",
+      category: "testing",
+      icon: "🧪",
+      tool_kind: "download",
+      download_url: "https://example.com/no-source",
+      web_url: "",
+      platform: "windows",
+    });
+
+    const tool = (await getToolBySlug("no-source")) as Tool;
+    expect(tool).toBeDefined();
+    expect(tool.github_url).toBe("");
+    await deleteTool("no-source");
+  });
+
   it("createTool rejects duplicate slugs", async () => {
     await expect(
       createTool({

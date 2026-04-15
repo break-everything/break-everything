@@ -168,7 +168,8 @@ export async function PUT(
     );
   }
 
-  if (!isAllowedHttpUrl(String(body.github_url))) {
+  const githubUrl = String(body.github_url ?? "").trim();
+  if (githubUrl && !isAllowedHttpUrl(githubUrl)) {
     return NextResponse.json(
       { error: "github_url must be a valid http(s) URL" },
       { status: 400 }
@@ -205,7 +206,7 @@ export async function PUT(
       data_handling: dataHandling,
       review_notes: String(body.review_notes ?? "").trim(),
       last_reviewed_at: lastReviewedAt,
-      github_url: String(body.github_url ?? ""),
+      github_url: githubUrl,
       platform: String(body.platform ?? "").trim() || "windows",
     });
     return NextResponse.json({ success: true });

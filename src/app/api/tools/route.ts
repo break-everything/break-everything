@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.ok) return parsed.response;
   const body = parsed.body;
 
-  const required = ["name", "slug", "description", "short_description", "category", "github_url"];
+  const required = ["name", "slug", "description", "short_description", "category"];
   for (const field of required) {
     if (!body[field]) {
       return NextResponse.json(
@@ -170,7 +170,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!isAllowedHttpUrl(String(body.github_url))) {
+  const githubUrl = String(body.github_url ?? "").trim();
+  if (githubUrl && !isAllowedHttpUrl(githubUrl)) {
     return NextResponse.json(
       { error: "github_url must be a valid http(s) URL" },
       { status: 400 }
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
       data_handling: dataHandling,
       review_notes: String(body.review_notes ?? "").trim(),
       last_reviewed_at: lastReviewedAt,
-      github_url: String(body.github_url ?? ""),
+      github_url: githubUrl,
       platform: String(body.platform ?? "").trim() || "windows",
     });
     return NextResponse.json({ success: true, id: Number(result.lastInsertRowid) }, { status: 201 });

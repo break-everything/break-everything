@@ -254,6 +254,27 @@ describe("Tools API", () => {
     expect(data.success).toBe(true);
   });
 
+  it("POST /api/tools allows missing github_url when authenticated", async () => {
+    await loginAsAdmin();
+    const req = jsonRequest("http://localhost/api/tools", "POST", {
+      name: "No Source API Tool",
+      slug: "no-source-api-tool",
+      description: "Created via API test with no source link",
+      short_description: "API no source",
+      category: "test",
+      download_url: "https://example.com/no-source-api",
+    });
+    const res = await postTool(req);
+    expect(res.status).toBe(201);
+
+    const getReq = jsonRequest("http://localhost/api/tools/no-source-api-tool", "GET");
+    const getRes = await getToolBySlug(getReq, {
+      params: Promise.resolve({ slug: "no-source-api-tool" }),
+    });
+    const data = await getRes.json();
+    expect(data.tool.github_url).toBe("");
+  });
+
   it("POST /api/tools creates a web app with web_url when authenticated", async () => {
     await loginAsAdmin();
     const req = jsonRequest("http://localhost/api/tools", "POST", {

@@ -301,7 +301,9 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
           </div>
         )}
         <div>
-          <label className={labelClass}>Public project link</label>
+          <label className={labelClass}>
+            Public project link <span className="text-foreground/30">(optional)</span>
+          </label>
           <input
             type="url"
             name="github_url"
@@ -309,7 +311,6 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
             onChange={handleChange}
             placeholder="Usually GitHub — https://…"
             className={inputClass}
-            required
           />
         </div>
       </div>

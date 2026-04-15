@@ -64,6 +64,38 @@ export function parseDataHandling(value: unknown): ParsedDataHandling | null {
   return null;
 }
 
+/** Categories are lowercase slugs used for filtering chips and grouping. */
+export function normalizeCategoriesInput(
+  value: unknown
+): { ok: true; categories: string[] } | { ok: false; error: string } {
+  if (!Array.isArray(value)) {
+    return { ok: false, error: "categories must be an array of strings" };
+  }
+
+  const normalized: string[] = [];
+  for (const item of value) {
+    if (typeof item !== "string") {
+      return { ok: false, error: "categories must be an array of strings" };
+    }
+    const c = item.trim().toLowerCase();
+    if (!c) continue;
+    if (c.length > 40) {
+      return { ok: false, error: "each category must be at most 40 characters" };
+    }
+    if (c.includes(",")) {
+      return { ok: false, error: "categories must not contain commas" };
+    }
+    normalized.push(c);
+  }
+
+  const deduped = [...new Set(normalized)];
+  if (deduped.length === 0) {
+    return { ok: false, error: "categories must contain at least one category" };
+  }
+
+  return { ok: true, categories: deduped };
+}
+
 /**
  * Trusted iframe allowlist entries: hostname-style labels only. Rejects bare TLDs like `com` or `uk`,
  * which would otherwise match every host under that public suffix via suffix rules.

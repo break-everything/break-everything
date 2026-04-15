@@ -127,7 +127,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground mb-2">See who made it</h3>
             <p className="text-sm text-foreground/50">
-              Every tool links to its public project page so you can read more, ask questions, or get involved if you want to.
+              We prefer tools with a public project page so you can read more, ask questions, or get involved if you want to.
             </p>
           </div>
 

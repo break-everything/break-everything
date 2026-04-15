@@ -11,7 +11,7 @@ export default function TrustPanel({ tool }: { tool: Tool }) {
         Transparency
       </h3>
       <p className="text-sm text-foreground/55">
-        Break Everything links to each tool's source and what we checked, so you can break software costs without guessing what is behind the listing.
+        Break Everything strongly prefers source-linked tools and shows what we checked, so you can break software costs without guessing what is behind the listing.
       </p>
       <div className="text-sm text-foreground/60 space-y-2">
         <p>
