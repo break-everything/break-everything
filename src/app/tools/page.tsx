@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import PageAdScripts from "@/components/ads/PageAdScripts";
 import ToolCard from "@/components/tools/ToolCard";
 import type { Tool } from "@/types";
 
@@ -54,6 +55,7 @@ export default function ToolsPage() {
 
   return (
     <div className="px-6 py-16">
+      <PageAdScripts />
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-8">
