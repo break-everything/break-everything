@@ -23,4 +23,4 @@ export const GOOGLE_ADSENSE_ACCOUNT = "ca-pub-2587197324811876";
 
 /** External Jira form used for community tool requests. Replace placeholder before shipping. */
 export const TOOL_REQUEST_FORM_URL =
-  "https://evanmcghee.atlassian.net/jira/software/projects/KAN/form/35?atlOrigin=eyJpIjoiM2RiYzM3MjQ1OTAzNGNkMThmNTg4ODUzMmI5ZDI0ZGQiLCJwIjoiaiJ9";
+  "https://break-everything.atlassian.net/servicedesk/customer/portal/1/group/1/create/10007";
