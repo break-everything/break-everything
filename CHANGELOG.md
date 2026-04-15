@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Removed stale empty routes (src/app/request-a-tool, src/app/api/requests/[id]) and aligned docs with actual request flow (/request-tool).
 - Refreshed Markdown docs (`README`, `STRUCTURE`, `CONTRIBUTING`, agent pointers) to match current layout (`src/config`, analytics APIs, env vars, test scripts).
 
 ### Security

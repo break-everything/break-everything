@@ -11,12 +11,13 @@ src/
 |   `-- index.ts
 |-- app/                    # Routes, layouts, pages, API handlers
 |   |-- admin/              # Admin dashboard (+ layout metadata)
+|   |-- request-tool/       # Public request-a-tool page
 |   |-- api/
 |   |   |-- __tests__/      # API integration tests
 |   |   |-- analytics/      # GET /api/analytics
 |   |   |-- auth/
 |   |   |-- events/         # POST /api/events (analytics ingest)
-|   |   |-- requests/
+|   |   -- tools/
 |   |   `-- tools/
 |   |-- tools/              # Browse, [slug] detail, embed, run
 |   |-- globals.css
