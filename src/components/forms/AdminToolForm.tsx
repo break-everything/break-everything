@@ -143,6 +143,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
     "w-full px-4 py-2.5 rounded-xl bg-white/5 border border-card-border text-foreground text-sm placeholder:text-foreground/30 focus:outline-none focus:border-accent-amber/50 focus:ring-1 focus:ring-accent-amber/30 transition-colors";
 
   const labelClass = "block text-sm font-medium text-foreground/70 mb-1.5";
+  const requiredMark = <span className="text-accent-amber">*</span>;
 
   const hasStoreDraft =
     String(form.app_store_url ?? "").trim().length > 0 ||
@@ -153,6 +154,9 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
       <h2 className="text-xl font-bold text-foreground">
         {isEdit ? "Edit Tool" : "Add New Tool"}
       </h2>
+      <p className="text-xs text-foreground/45">
+        <span className="text-accent-amber">*</span> Required field
+      </p>
 
       {error && (
         <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
@@ -162,7 +166,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className={labelClass}>Name</label>
+          <label className={labelClass}>Name {requiredMark}</label>
           <input
             type="text"
             name="name"
@@ -175,7 +179,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
           />
         </div>
         <div>
-          <label className={labelClass}>Slug</label>
+          <label className={labelClass}>Slug {requiredMark}</label>
           <input
             type="text"
             name="slug"
@@ -190,7 +194,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
       </div>
 
       <div>
-        <label className={labelClass}>Short Description</label>
+        <label className={labelClass}>Short Description {requiredMark}</label>
         <input
           type="text"
           name="short_description"
@@ -203,7 +207,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
       </div>
 
       <div>
-        <label className={labelClass}>Full Description</label>
+        <label className={labelClass}>Full Description {requiredMark}</label>
         <textarea
           name="description"
           value={form.description}
@@ -242,7 +246,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
           </select>
         </div>
         <div>
-          <label className={labelClass}>Categories</label>
+          <label className={labelClass}>Categories {requiredMark}</label>
           <input
             type="text"
             name="categories"
@@ -285,7 +289,9 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {form.tool_kind === "download" ? (
           <div>
-            <label className={labelClass}>Download URL</label>
+            <label className={labelClass}>
+              Download URL {!hasStoreDraft ? requiredMark : <span className="text-foreground/30">(optional)</span>}
+            </label>
             <input
               type="url"
               name="download_url"
@@ -295,10 +301,15 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
               className={inputClass}
               required={!hasStoreDraft}
             />
+            {hasStoreDraft && (
+              <p className="mt-1 text-xs text-foreground/40">
+                Optional because at least one store URL is provided.
+              </p>
+            )}
           </div>
         ) : (
           <div>
-            <label className={labelClass}>Web app URL</label>
+            <label className={labelClass}>Web app URL {requiredMark}</label>
             <input
               type="url"
               name="web_url"
