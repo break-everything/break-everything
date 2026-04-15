@@ -303,7 +303,7 @@ export default function AdminPage() {
                     </div>
                     <div className="flex items-center gap-3 mt-0.5">
                       <span className="text-xs text-foreground/40">/{tool.slug}</span>
-                      <span className="text-xs text-foreground/40 capitalize">
+                      <span className="text-xs text-foreground/40">
                         {categories.join(", ") || "uncategorized"}
                       </span>
                       <span className="text-xs text-foreground/40">

@@ -114,7 +114,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
       const method = isEdit ? "PUT" : "POST";
       const categories = form.categories
         .split(",")
-        .map((value) => value.trim().toLowerCase())
+        .map((value) => value.trim())
         .filter(Boolean);
 
       const res = await fetch(url, {

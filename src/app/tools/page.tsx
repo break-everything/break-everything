@@ -16,17 +16,24 @@ export default function ToolsPage() {
       .then((res) => res.json())
       .then((data) => {
         setTools(data.tools);
-        const cats = [
-          ...new Set(
-            data.tools.flatMap((t: Tool) =>
-              Array.isArray(t.categories) && t.categories.length > 0
-                ? t.categories
-                : t.category
-                  ? [t.category]
-                  : []
-            )
-          ),
-        ] as string[];
+        const catsMap = new Map<string, string>();
+        for (const tool of data.tools as Tool[]) {
+          const entries =
+            Array.isArray(tool.categories) && tool.categories.length > 0
+              ? tool.categories
+              : tool.category
+                ? [tool.category]
+                : [];
+          for (const entry of entries) {
+            const label = String(entry ?? "").trim();
+            if (!label) continue;
+            const key = label.toLowerCase();
+            if (!catsMap.has(key)) {
+              catsMap.set(key, label);
+            }
+          }
+        }
+        const cats = Array.from(catsMap.values());
         setCategories(cats);
         setLoading(false);
       });
@@ -42,7 +49,7 @@ export default function ToolsPage() {
               : t.category
                 ? [t.category]
                 : [];
-          return values.includes(activeCategory);
+          return values.some((value) => value.trim().toLowerCase() === activeCategory.toLowerCase());
         });
 
   return (
@@ -100,7 +107,7 @@ export default function ToolsPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-none text-sm font-medium border-2 transition-colors capitalize ${
+              className={`px-4 py-2 rounded-none text-sm font-medium border-2 transition-colors ${
                 activeCategory === cat
                   ? "bg-accent-amber/15 text-accent-amber border-accent-amber/40"
                   : "border-card-border text-foreground/60 hover:text-foreground hover:border-accent-steel/35 bg-white/[0.03]"

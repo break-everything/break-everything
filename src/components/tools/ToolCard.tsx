@@ -71,7 +71,7 @@ export default function ToolCard({ tool }: { tool: Tool }) {
           {categories.slice(0, 2).map((category) => (
             <span
               key={category}
-              className="geo-badge px-2.5 py-0.5 text-[11px] font-medium bg-accent-amber/10 text-accent-amber capitalize shrink-0 border border-accent-amber/25"
+              className="geo-badge px-2.5 py-0.5 text-[11px] font-medium bg-accent-amber/10 text-accent-amber shrink-0 border border-accent-amber/25"
             >
               {category}
             </span>

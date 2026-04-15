@@ -64,7 +64,7 @@ export function parseDataHandling(value: unknown): ParsedDataHandling | null {
   return null;
 }
 
-/** Categories are lowercase slugs used for filtering chips and grouping. */
+/** Categories preserve user casing while enforcing simple, deduped labels. */
 export function normalizeCategoriesInput(
   value: unknown
 ): { ok: true; categories: string[] } | { ok: false; error: string } {
@@ -73,11 +73,12 @@ export function normalizeCategoriesInput(
   }
 
   const normalized: string[] = [];
+  const seen = new Set<string>();
   for (const item of value) {
     if (typeof item !== "string") {
       return { ok: false, error: "categories must be an array of strings" };
     }
-    const c = item.trim().toLowerCase();
+    const c = item.trim();
     if (!c) continue;
     if (c.length > 40) {
       return { ok: false, error: "each category must be at most 40 characters" };
@@ -85,15 +86,17 @@ export function normalizeCategoriesInput(
     if (c.includes(",")) {
       return { ok: false, error: "categories must not contain commas" };
     }
+    const key = c.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
     normalized.push(c);
   }
 
-  const deduped = [...new Set(normalized)];
-  if (deduped.length === 0) {
+  if (normalized.length === 0) {
     return { ok: false, error: "categories must contain at least one category" };
   }
 
-  return { ok: true, categories: deduped };
+  return { ok: true, categories: normalized };
 }
 
 /**

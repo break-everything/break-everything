@@ -164,7 +164,7 @@ export default async function ToolDetailPage({
                     {categories.map((category) => (
                       <span
                         key={category}
-                        className="geo-badge px-2 py-0.5 text-[11px] font-medium bg-accent-amber/10 text-accent-amber uppercase tracking-wider font-mono border border-accent-amber/25"
+                        className="geo-badge px-2 py-0.5 text-[11px] font-medium bg-accent-amber/10 text-accent-amber tracking-wider font-mono border border-accent-amber/25"
                       >
                         {category}
                       </span>

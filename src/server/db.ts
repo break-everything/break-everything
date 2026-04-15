@@ -134,7 +134,17 @@ async function queryAll<T>(sql: string, args: InArgs = []): Promise<T[]> {
 }
 
 function normalizeCategories(categories: string[]): string[] {
-  return [...new Set(categories.map((c) => c.trim().toLowerCase()).filter(Boolean))];
+  const normalized: string[] = [];
+  const seen = new Set<string>();
+  for (const value of categories) {
+    const category = value.trim();
+    if (!category) continue;
+    const key = category.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    normalized.push(category);
+  }
+  return normalized;
 }
 
 function parseCategoriesValue(value: unknown): string[] {
@@ -154,7 +164,7 @@ function primaryCategoryFrom(categories: string[]): string {
 
 function normalizeToolRowCategories<T extends Record<string, unknown>>(row: T): T {
   const categories = parseCategoriesValue(row.categories);
-  const fallbackCategory = typeof row.category === "string" ? row.category.trim().toLowerCase() : "";
+  const fallbackCategory = typeof row.category === "string" ? row.category.trim() : "";
   const resolved = categories.length > 0 ? categories : fallbackCategory ? [fallbackCategory] : [];
   return {
     ...row,
@@ -509,7 +519,11 @@ export async function getToolsByCategory(category: string) {
   const target = category.trim().toLowerCase();
   return rows
     .map(normalizeToolRowCategories)
-    .filter((row) => Array.isArray(row.categories) && row.categories.includes(target));
+    .filter(
+      (row) =>
+        Array.isArray(row.categories) &&
+        row.categories.some((entry) => entry.trim().toLowerCase() === target)
+    );
 }
 
 interface ToolWriteInput {
