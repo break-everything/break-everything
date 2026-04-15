@@ -10,6 +10,7 @@ import {
   isAllowedEmbedUrl,
   isAllowedHttpUrl,
   isValidToolSlug,
+  normalizeCategoriesInput,
   normalizeTrustedDomainsInput,
   parseCsvDomains,
   parseDataHandling,
@@ -30,7 +31,7 @@ export async function GET(
   if (!tool) {
     return NextResponse.json({ error: "Tool not found" }, { status: 404 });
   }
-  return NextResponse.json({ tool: toPublicTool(tool as Tool) });
+  return NextResponse.json({ tool: toPublicTool(tool as unknown as Tool) });
 }
 
 export async function PUT(
@@ -92,6 +93,10 @@ export async function PUT(
     return NextResponse.json({ error: trustedResult.error }, { status: 400 });
   }
   const trustedDomains = trustedResult.csv;
+  const categoriesResult = normalizeCategoriesInput(body.categories);
+  if (!categoriesResult.ok) {
+    return NextResponse.json({ error: categoriesResult.error }, { status: 400 });
+  }
 
   let deliveryMode: "redirect" | "embedded" | "browserRuntime" | "download" = "download";
   if (body.delivery_mode != null && String(body.delivery_mode).trim() !== "") {
@@ -187,7 +192,7 @@ export async function PUT(
       name: String(body.name ?? ""),
       description: String(body.description ?? ""),
       short_description: String(body.short_description ?? ""),
-      category: String(body.category ?? ""),
+      categories: categoriesResult.categories,
       icon: String(body.icon ?? "").trim() || "🔧",
       tool_kind: toolKind,
       delivery_mode: deliveryMode,

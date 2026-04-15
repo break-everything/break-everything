@@ -81,7 +81,7 @@ describe("Tools CRUD", () => {
     const tool = (await getToolBySlug("pdf-forge")) as Tool;
     expect(tool).toBeDefined();
     expect(tool.name).toBe("PDF Forge");
-    expect(tool.category).toBe("pdf");
+    expect(tool.categories).toEqual(["pdf"]);
   });
 
   it("getToolBySlug returns undefined for non-existent slug", async () => {
@@ -95,12 +95,82 @@ describe("Tools CRUD", () => {
     expect(pdfTools[0].slug).toBe("pdf-forge");
   });
 
+  it("getToolsByCategory matches membership in multi-category arrays", async () => {
+    await createTool({
+      name: "Multi Category Tool",
+      slug: "multi-category-tool",
+      description: "Belongs to two categories",
+      short_description: "multi",
+      categories: ["testing", "utility"],
+      icon: "🧩",
+      tool_kind: "download",
+      delivery_mode: "download",
+      download_url: "https://example.com/multi",
+      web_url: "",
+      app_store_url: "",
+      play_store_url: "",
+      embed_allowed: 0,
+      embed_url: "",
+      runtime_supported: 0,
+      runtime_entrypoint: "",
+      sandbox_level: "strict",
+      trusted_domains: "",
+      vendor: "",
+      privacy_summary: "",
+      data_handling: "medium",
+      review_notes: "",
+      last_reviewed_at: null,
+      github_url: "",
+      platform: "windows",
+    });
+
+    const utilityTools = (await getToolsByCategory("utility")) as Tool[];
+    expect(utilityTools.map((t) => t.slug)).toContain("multi-category-tool");
+
+    await deleteTool("multi-category-tool");
+  });
+
   it("getCategories returns all unique categories", async () => {
     const cats = await getCategories();
     expect(cats).toContain("pdf");
     expect(cats).toContain("converter");
     expect(cats).toContain("utility");
     expect(cats.length).toBe(3);
+  });
+
+  it("getCategories flattens and dedupes categories from all tools", async () => {
+    await createTool({
+      name: "Deduped Categories Tool",
+      slug: "deduped-categories-tool",
+      description: "Tests category flattening and dedupe",
+      short_description: "dedupe",
+      categories: ["utility", "productivity", "utility"],
+      icon: "🧰",
+      tool_kind: "download",
+      delivery_mode: "download",
+      download_url: "https://example.com/dedupe",
+      web_url: "",
+      app_store_url: "",
+      play_store_url: "",
+      embed_allowed: 0,
+      embed_url: "",
+      runtime_supported: 0,
+      runtime_entrypoint: "",
+      sandbox_level: "strict",
+      trusted_domains: "",
+      vendor: "",
+      privacy_summary: "",
+      data_handling: "medium",
+      review_notes: "",
+      last_reviewed_at: null,
+      github_url: "",
+      platform: "windows",
+    });
+
+    const cats = await getCategories();
+    expect(cats).toContain("productivity");
+
+    await deleteTool("deduped-categories-tool");
   });
 
   it("getToolCount returns correct count", async () => {
@@ -128,11 +198,25 @@ describe("Tools CRUD", () => {
       slug: "test-tool",
       description: "A test tool",
       short_description: "Test",
-      category: "testing",
+      categories: ["testing", "utility"],
       icon: "🧪",
       tool_kind: "download",
+      delivery_mode: "download",
       download_url: "https://example.com/dl",
       web_url: "",
+      app_store_url: "",
+      play_store_url: "",
+      embed_allowed: 0,
+      embed_url: "",
+      runtime_supported: 0,
+      runtime_entrypoint: "",
+      sandbox_level: "strict",
+      trusted_domains: "",
+      vendor: "",
+      privacy_summary: "",
+      data_handling: "medium",
+      review_notes: "",
+      last_reviewed_at: null,
       github_url: "https://github.com/test/test",
       platform: "windows",
     });
@@ -140,6 +224,7 @@ describe("Tools CRUD", () => {
     const tool = (await getToolBySlug("test-tool")) as Tool;
     expect(tool).toBeDefined();
     expect(tool.name).toBe("TestTool");
+    expect(tool.categories).toEqual(["testing", "utility"]);
     expect(await getToolCount()).toBe(4);
   });
 
@@ -149,11 +234,25 @@ describe("Tools CRUD", () => {
       slug: "no-source",
       description: "A test tool without source link",
       short_description: "No source",
-      category: "testing",
+      categories: ["testing"],
       icon: "🧪",
       tool_kind: "download",
+      delivery_mode: "download",
       download_url: "https://example.com/no-source",
       web_url: "",
+      app_store_url: "",
+      play_store_url: "",
+      embed_allowed: 0,
+      embed_url: "",
+      runtime_supported: 0,
+      runtime_entrypoint: "",
+      sandbox_level: "strict",
+      trusted_domains: "",
+      vendor: "",
+      privacy_summary: "",
+      data_handling: "medium",
+      review_notes: "",
+      last_reviewed_at: null,
       platform: "windows",
     });
 
@@ -170,11 +269,25 @@ describe("Tools CRUD", () => {
         slug: "test-tool",
         description: "dupe",
         short_description: "dupe",
-        category: "testing",
+        categories: ["testing"],
         icon: "🔧",
         tool_kind: "download",
+        delivery_mode: "download",
         download_url: "https://example.com",
         web_url: "",
+        app_store_url: "",
+        play_store_url: "",
+        embed_allowed: 0,
+        embed_url: "",
+        runtime_supported: 0,
+        runtime_entrypoint: "",
+        sandbox_level: "strict",
+        trusted_domains: "",
+        vendor: "",
+        privacy_summary: "",
+        data_handling: "medium",
+        review_notes: "",
+        last_reviewed_at: null,
         github_url: "https://github.com/test",
         platform: "windows",
       })
@@ -186,17 +299,32 @@ describe("Tools CRUD", () => {
       name: "TestTool Updated",
       description: "Updated description",
       short_description: "Updated",
-      category: "testing",
+      categories: ["testing", "desktop"],
       icon: "🧪",
       tool_kind: "download",
+      delivery_mode: "download",
       download_url: "https://example.com/dl",
       web_url: "",
+      app_store_url: "",
+      play_store_url: "",
+      embed_allowed: 0,
+      embed_url: "",
+      runtime_supported: 0,
+      runtime_entrypoint: "",
+      sandbox_level: "strict",
+      trusted_domains: "",
+      vendor: "",
+      privacy_summary: "",
+      data_handling: "medium",
+      review_notes: "",
+      last_reviewed_at: null,
       github_url: "https://github.com/test/test",
       platform: "windows,mac",
     });
 
     const tool = (await getToolBySlug("test-tool")) as Tool;
     expect(tool.name).toBe("TestTool Updated");
+    expect(tool.categories).toEqual(["testing", "desktop"]);
     expect(tool.platform).toBe("windows,mac");
   });
 

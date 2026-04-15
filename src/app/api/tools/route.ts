@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   if (blocked) return blocked;
 
   const tools = await getAllTools();
-  return NextResponse.json({ tools: tools.map((t) => toPublicTool(t as Tool)) });
+  return NextResponse.json({ tools: tools.map((t) => toPublicTool(t as unknown as Tool)) });
 }
 
 export async function POST(request: NextRequest) {

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const tools = (await getAllTools()) as Tool[];
+  const tools = (await getAllTools()) as unknown as Tool[];
   const toolCount = await getToolCount();
   const reviewedToolCount = await getReviewedToolCount();
   const { linked: sourceLinkedCount, total: sourceTotal } =
@@ -139,7 +139,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold text-foreground mb-2">Always Free</h3>
             <p className="text-sm text-foreground/50">
-              No trials, no freemium, no subscriptions. Built by students who know what it's like to be broke.
+              No trials, no freemium, no subscriptions. Built by students who know what it&apos;s like to be broke.
             </p>
           </div>
         </div>

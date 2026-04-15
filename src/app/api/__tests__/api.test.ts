@@ -205,7 +205,7 @@ describe("Tools API", () => {
       slug: "new-tool",
       description: "desc",
       short_description: "short",
-      category: "test",
+      categories: ["test"],
       download_url: "https://example.com",
       github_url: "https://github.com/test",
     });
@@ -220,7 +220,7 @@ describe("Tools API", () => {
       slug: "forged-tool",
       description: "desc",
       short_description: "short",
-      category: "test",
+      categories: ["test"],
       download_url: "https://example.com",
       github_url: "https://github.com/test",
     });
@@ -244,7 +244,7 @@ describe("Tools API", () => {
       slug: "api-test-tool",
       description: "Created via API test",
       short_description: "API test",
-      category: "test",
+      categories: ["test", "utility"],
       download_url: "https://example.com/dl",
       github_url: "https://github.com/test/api",
     });
@@ -261,7 +261,7 @@ describe("Tools API", () => {
       slug: "no-source-api-tool",
       description: "Created via API test with no source link",
       short_description: "API no source",
-      category: "test",
+      categories: ["test"],
       download_url: "https://example.com/no-source-api",
     });
     const res = await postTool(req);
@@ -282,7 +282,7 @@ describe("Tools API", () => {
       slug: "web-only-tool",
       description: "Browser app",
       short_description: "Web short",
-      category: "utility",
+      categories: ["utility"],
       tool_kind: "web",
       web_url: "https://app.example.com/run",
       download_url: "",
@@ -309,7 +309,7 @@ describe("Tools API", () => {
       slug: "pdf-forge",
       description: "Should fail on duplicate slug",
       short_description: "duplicate",
-      category: "test",
+      categories: ["test"],
       download_url: "https://example.com/dupe",
       github_url: "https://github.com/test/dupe",
     });
@@ -342,7 +342,7 @@ describe("Tools API", () => {
       name: "API Test Tool Renamed",
       description: "Updated",
       short_description: "Updated short",
-      category: "test",
+      categories: ["test", "desktop"],
       download_url: "https://example.com/dl2",
       github_url: "https://github.com/test/api2",
       platform: "mac",
@@ -365,7 +365,7 @@ describe("Tools API", () => {
       name: "Does not exist",
       description: "Still returns success",
       short_description: "noop",
-      category: "test",
+      categories: ["test"],
       download_url: "https://example.com/nope",
       github_url: "https://github.com/test/nope",
       platform: "windows",
@@ -399,6 +399,66 @@ describe("Tools API", () => {
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.success).toBe(true);
+  });
+
+  it("POST /api/tools rejects missing categories", async () => {
+    await loginAsAdmin();
+    const req = jsonRequest("http://localhost/api/tools", "POST", {
+      name: "No Categories",
+      slug: "no-categories",
+      description: "Invalid payload",
+      short_description: "invalid",
+      download_url: "https://example.com/no-categories",
+      github_url: "https://github.com/test/no-categories",
+    });
+    const res = await postTool(req);
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toContain("categories");
+  });
+
+  it("POST /api/tools rejects empty categories array", async () => {
+    await loginAsAdmin();
+    const req = jsonRequest("http://localhost/api/tools", "POST", {
+      name: "Empty Categories",
+      slug: "empty-categories",
+      description: "Invalid payload",
+      short_description: "invalid",
+      categories: [],
+      download_url: "https://example.com/empty-categories",
+      github_url: "https://github.com/test/empty-categories",
+    });
+    const res = await postTool(req);
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toContain("at least one");
+  });
+
+  it("POST /api/tools normalizes and dedupes categories", async () => {
+    await loginAsAdmin();
+    const req = jsonRequest("http://localhost/api/tools", "POST", {
+      name: "Normalized Categories",
+      slug: "normalized-categories",
+      description: "Category normalization test",
+      short_description: "normalize",
+      categories: ["  Utility  ", "utility", "TOOLS "],
+      download_url: "https://example.com/normalized-categories",
+      github_url: "https://github.com/test/normalized-categories",
+    });
+    const res = await postTool(req);
+    expect(res.status).toBe(201);
+
+    const getReq = jsonRequest("http://localhost/api/tools/normalized-categories", "GET");
+    const getRes = await getToolBySlug(getReq, {
+      params: Promise.resolve({ slug: "normalized-categories" }),
+    });
+    expect(getRes.status).toBe(200);
+    const data = await getRes.json();
+    expect(data.tool.categories).toEqual(["utility", "tools"]);
+
+    const delReq = jsonRequest("http://localhost/api/tools/normalized-categories", "DELETE");
+    const delRes = await deleteToolRoute(delReq, {
+      params: Promise.resolve({ slug: "normalized-categories" }),
+    });
+    expect(delRes.status).toBe(200);
   });
 });
 
