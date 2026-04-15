@@ -16,7 +16,17 @@ export default function ToolsPage() {
       .then((res) => res.json())
       .then((data) => {
         setTools(data.tools);
-        const cats = [...new Set(data.tools.map((t: Tool) => t.category))] as string[];
+        const cats = [
+          ...new Set(
+            data.tools.flatMap((t: Tool) =>
+              Array.isArray(t.categories) && t.categories.length > 0
+                ? t.categories
+                : t.category
+                  ? [t.category]
+                  : []
+            )
+          ),
+        ] as string[];
         setCategories(cats);
         setLoading(false);
       });
@@ -25,7 +35,15 @@ export default function ToolsPage() {
   const filtered =
     activeCategory === "all"
       ? tools
-      : tools.filter((t) => t.category === activeCategory);
+      : tools.filter((t) => {
+          const values =
+            Array.isArray(t.categories) && t.categories.length > 0
+              ? t.categories
+              : t.category
+                ? [t.category]
+                : [];
+          return values.includes(activeCategory);
+        });
 
   return (
     <div className="px-6 py-16">

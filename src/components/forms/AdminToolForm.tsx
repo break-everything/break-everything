@@ -10,6 +10,9 @@ interface AdminToolFormProps {
 }
 
 function buildInitialForm(tool?: Tool | null) {
+  const initialCategories = tool?.categories?.length
+    ? tool.categories.join(", ")
+    : tool?.category ?? "";
   if (tool) {
     const kind: ToolKind = tool.tool_kind === "web" ? "web" : "download";
     return {
@@ -17,7 +20,7 @@ function buildInitialForm(tool?: Tool | null) {
       slug: tool.slug,
       description: tool.description,
       short_description: tool.short_description,
-      category: tool.category,
+      categories: initialCategories,
       icon: tool.icon,
       tool_kind: kind,
       delivery_mode: tool.delivery_mode || "download",
@@ -45,7 +48,7 @@ function buildInitialForm(tool?: Tool | null) {
     slug: "",
     description: "",
     short_description: "",
-    category: "",
+    categories: "",
     icon: "🔧",
     tool_kind: "download" as ToolKind,
     delivery_mode: "download",
@@ -109,11 +112,18 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
     try {
       const url = isEdit ? `/api/tools/${tool!.slug}` : "/api/tools";
       const method = isEdit ? "PUT" : "POST";
+      const categories = form.categories
+        .split(",")
+        .map((value) => value.trim().toLowerCase())
+        .filter(Boolean);
 
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          categories,
+        }),
       });
 
       const data = await res.json();
@@ -232,13 +242,13 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
           </select>
         </div>
         <div>
-          <label className={labelClass}>Category</label>
+          <label className={labelClass}>Categories</label>
           <input
             type="text"
-            name="category"
-            value={form.category}
+            name="categories"
+            value={form.categories}
             onChange={handleChange}
-            placeholder="pdf, converter, mobile, utility…"
+            placeholder="pdf, converter, mobile, utility"
             className={inputClass}
             required
           />
@@ -318,7 +328,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
       <div className="rounded-xl border border-card-border bg-white/[0.02] p-4 space-y-4">
         <p className="text-sm font-medium text-foreground/80">App Store &amp; Google Play</p>
         <p className="text-xs text-foreground/45 -mt-2">
-          Optional. Use category <span className="font-mono text-foreground/55">mobile</span> to group
+          Optional. Include <span className="font-mono text-foreground/55">mobile</span> in categories to group
           listings. Visitors pick Apple or Android when both links exist; each opens the store off-site.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

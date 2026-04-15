@@ -9,7 +9,10 @@ export interface Tool {
   slug: string;
   description: string;
   short_description: string;
+  /** Primary category kept for legacy compatibility. */
   category: string;
+  /** Normalized list of categories (canonical field). */
+  categories: string[];
   icon: string;
   /** download = release or install URL when not primarily web; web = in-browser app URL */
   tool_kind: ToolKind;

@@ -29,6 +29,12 @@ function kindBadge(tool: Tool) {
 
 export default function ToolCard({ tool }: { tool: Tool }) {
   const platformBadges = tool.platform.split(",").map((p) => p.trim());
+  const categories =
+    Array.isArray(tool.categories) && tool.categories.length > 0
+      ? tool.categories
+      : tool.category
+        ? [tool.category]
+        : [];
 
   return (
     <div className="tool-card glass-card p-6 h-full flex flex-col group transition-colors">
@@ -61,9 +67,16 @@ export default function ToolCard({ tool }: { tool: Tool }) {
             </span>
           ))}
         </div>
-        <span className="geo-badge px-2.5 py-0.5 text-[11px] font-medium bg-accent-amber/10 text-accent-amber capitalize shrink-0 border border-accent-amber/25">
-          {tool.category}
-        </span>
+        <div className="flex items-center gap-1.5 flex-wrap justify-end">
+          {categories.slice(0, 2).map((category) => (
+            <span
+              key={category}
+              className="geo-badge px-2.5 py-0.5 text-[11px] font-medium bg-accent-amber/10 text-accent-amber capitalize shrink-0 border border-accent-amber/25"
+            >
+              {category}
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="relative z-10 pt-3 border-t border-card-border">

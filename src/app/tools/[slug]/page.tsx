@@ -86,6 +86,12 @@ export default async function ToolDetailPage({
 
   const platformBadges = tool.platform.split(",").map((p) => p.trim());
   const githubUrl = String(tool.github_url ?? "").trim();
+  const categories =
+    Array.isArray(tool.categories) && tool.categories.length > 0
+      ? tool.categories
+      : tool.category
+        ? [tool.category]
+        : [];
 
   return (
     <div className="px-6 py-16">
@@ -153,10 +159,17 @@ export default async function ToolDetailPage({
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-foreground/50">Category</span>
-                  <span className="text-sm text-foreground capitalize">
-                    {tool.category}
-                  </span>
+                  <span className="text-sm text-foreground/50">Categories</span>
+                  <div className="flex gap-1.5 flex-wrap justify-end">
+                    {categories.map((category) => (
+                      <span
+                        key={category}
+                        className="geo-badge px-2 py-0.5 text-[11px] font-medium bg-accent-amber/10 text-accent-amber uppercase tracking-wider font-mono border border-accent-amber/25"
+                      >
+                        {category}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-foreground/50">Platform</span>

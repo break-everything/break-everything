@@ -270,6 +270,12 @@ export default function AdminPage() {
                     )
                   : null;
                 const stale = staleDays == null || staleDays > 90;
+                const categories =
+                  Array.isArray(tool.categories) && tool.categories.length > 0
+                    ? tool.categories
+                    : tool.category
+                      ? [tool.category]
+                      : [];
                 return (
               <div
                 key={tool.id}
@@ -298,7 +304,7 @@ export default function AdminPage() {
                     <div className="flex items-center gap-3 mt-0.5">
                       <span className="text-xs text-foreground/40">/{tool.slug}</span>
                       <span className="text-xs text-foreground/40 capitalize">
-                        {tool.category}
+                        {categories.join(", ") || "uncategorized"}
                       </span>
                       <span className="text-xs text-foreground/40">
                         reviewed{" "}
