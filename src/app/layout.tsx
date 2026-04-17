@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AbstractBg from "@/components/layout/AbstractBg";
+import CampusAttributionCapture from "@/components/layout/CampusAttributionCapture";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
@@ -95,6 +96,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AbstractBg />
+        <CampusAttributionCapture />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BounceInsightTracker from "@/components/analytics/BounceInsightTracker";
 import ToolCard from "@/components/tools/ToolCard";
 import { useFavorites } from "@/components/tools/useFavorites";
 import type { Tool } from "@/types";
@@ -59,6 +60,7 @@ export default function ToolsPage() {
   return (
     <div className="px-6 py-16">
       <div className="mx-auto max-w-6xl">
+        <BounceInsightTracker route="tools" />
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">

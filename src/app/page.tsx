@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import BounceInsightTracker from "@/components/analytics/BounceInsightTracker";
 import ToolCard from "@/components/tools/ToolCard";
 import {
   getAllTools,
@@ -31,6 +32,7 @@ export default async function HomePage() {
 
   return (
     <div className="relative">
+      <BounceInsightTracker route="home" />
       {/* Hero Section */}
       <section className="relative px-6 pt-12 pb-16 md:pt-16 md:pb-24">
         <div className="mx-auto max-w-6xl text-center">
