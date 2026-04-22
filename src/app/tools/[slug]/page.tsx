@@ -125,10 +125,6 @@ export default async function ToolDetailPage({
                 name={tool.name}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none text-xs font-semibold border-2 border-accent-lime/35 bg-accent-lime/10 text-accent-lime hover:bg-accent-lime/15 transition-colors"
               />
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-xs font-medium bg-accent-lime/10 text-accent-lime border-2 border-accent-lime/35 font-mono uppercase tracking-wide">
-                <span className="w-1.5 h-1.5 bg-accent-lime rotate-45 shrink-0" />
-                Community tool
-              </span>
             </div>
             <p className="text-foreground/50 mt-2">{tool.short_description}</p>
           </div>
