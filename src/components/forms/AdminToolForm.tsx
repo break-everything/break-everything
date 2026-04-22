@@ -176,6 +176,7 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
             placeholder="PDF Forge"
             className={inputClass}
             required
+            autoFocus
           />
         </div>
         <div>

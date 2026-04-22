@@ -25,9 +25,19 @@ export default function AdminPage() {
   const [adminTab, setAdminTab] = useState<"manage" | "analytics">("manage");
 
   const isMounted = useRef(true);
+  const formContainerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     return () => { isMounted.current = false; };
   }, []);
+
+  useEffect(() => {
+    if (!showForm || adminTab !== "manage") return;
+    const container = formContainerRef.current;
+    if (!container) return;
+    container.scrollIntoView({ behavior: "smooth", block: "start" });
+    const firstField = container.querySelector<HTMLInputElement>('input[name="name"]');
+    firstField?.focus();
+  }, [showForm, adminTab, editingTool]);
 
   async function fetchTools() {
     const res = await fetch("/api/tools");
@@ -250,7 +260,7 @@ export default function AdminPage() {
           <>
         {/* Add/Edit Form */}
         {showForm && (
-          <div className="glass-card p-6 mb-8">
+          <div ref={formContainerRef} className="glass-card p-6 mb-8">
             <AdminToolForm
               key={editingTool?.slug ?? "new"}
               tool={editingTool}
