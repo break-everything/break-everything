@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState, useEffect, useRef } from "react";
 import type { Tool } from "@/types";
+import ToolIcon from "@/components/tools/ToolIcon";
 
 const AdminAnalyticsPanel = dynamic(
   () => import("@/components/admin").then((m) => m.AdminAnalyticsPanel)
@@ -298,7 +299,12 @@ export default function AdminPage() {
                 className="glass-card p-5 flex items-center justify-between"
               >
                 <div className="flex items-center gap-4 min-w-0">
-                  <span className="text-2xl">{tool.icon}</span>
+                  <ToolIcon
+                    icon={tool.icon}
+                    name={tool.name}
+                    className="w-8 h-8 shrink-0"
+                    fallbackClassName="text-2xl"
+                  />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-semibold text-foreground truncate">

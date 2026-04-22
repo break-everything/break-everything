@@ -259,12 +259,13 @@ export default function AdminToolForm({ tool, onSave, onCancel }: AdminToolFormP
           />
         </div>
         <div>
-          <label className={labelClass}>Icon (emoji)</label>
+          <label className={labelClass}>Icon (emoji or image URL)</label>
           <input
             type="text"
             name="icon"
             value={form.icon}
             onChange={handleChange}
+            placeholder="🔧 or https://example.com/icon.png"
             className={inputClass}
           />
         </div>

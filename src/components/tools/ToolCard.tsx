@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Tool, ToolKind } from "@/types";
 import ToolAccessLinks from "./ToolAccessLinks";
 import FavoriteToggle from "./FavoriteToggle";
+import ToolIcon from "./ToolIcon";
 import { resolveMobileStoreLinks } from "./delivery";
 
 function kindBadge(tool: Tool) {
@@ -40,7 +41,12 @@ export default function ToolCard({ tool }: { tool: Tool }) {
   return (
     <div className="tool-card glass-card p-6 h-full flex flex-col group transition-colors">
       <div className="flex items-start justify-between mb-4">
-        <span className="text-3xl">{tool.icon}</span>
+        <ToolIcon
+          icon={tool.icon}
+          name={tool.name}
+          className="w-10 h-10 shrink-0"
+          fallbackClassName="text-3xl"
+        />
         <div className="shrink-0 flex items-center gap-2">
           {kindBadge(tool)}
           <FavoriteToggle

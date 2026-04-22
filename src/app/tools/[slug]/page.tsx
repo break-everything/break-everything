@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ToolAccessLinks from "@/components/tools/ToolAccessLinks";
 import FavoriteToggle from "@/components/tools/FavoriteToggle";
+import ToolIcon from "@/components/tools/ToolIcon";
 import TrustPanel from "@/components/tools/TrustPanel";
 import {
   DEFAULT_OG_IMAGE,
@@ -113,7 +114,12 @@ export default async function ToolDetailPage({
         {/* Tool Header */}
         <div className="flex items-start gap-5 mb-8">
           <div className="w-16 h-16 glass-card flex items-center justify-center text-3xl shrink-0">
-            {tool.icon}
+            <ToolIcon
+              icon={tool.icon}
+              name={tool.name}
+              className="w-11 h-11 shrink-0"
+              fallbackClassName="text-3xl"
+            />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
