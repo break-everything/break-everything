@@ -56,6 +56,7 @@ export default function ToolsPage() {
         });
   const favoriteSet = new Set(favorites);
   const favoriteTools = tools.filter((tool) => favoriteSet.has(tool.slug));
+  const filteredFavoriteTools = favoriteTools.filter((tool) => filtered.includes(tool));
 
   return (
     <div className="px-6 py-16">
@@ -124,7 +125,7 @@ export default function ToolsPage() {
             </div>
           </div>
 
-          {favoriteTools.length === 0 ? (
+          {filteredFavoriteTools.length === 0 ? (
             <div className="glass-card p-6 border border-card-border/80">
               <p className="text-sm text-foreground/55">
                 No favorites yet. Tap <span className="text-foreground/75">Favorite</span> on a tool card or detail
@@ -133,7 +134,7 @@ export default function ToolsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favoriteTools.map((tool) => (
+              {filteredFavoriteTools.map((tool) => (
                 <ToolCard key={`favorite-${tool.id}`} tool={tool} />
               ))}
             </div>
